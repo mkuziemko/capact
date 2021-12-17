@@ -6,12 +6,15 @@ import (
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	"k8s.io/utils/strings/slices"
 )
 
 var (
-	helmType = "Helm"
-	terraformType = "Terraform"
+	helmTool      = "Helm"
+	terraformTool = "Terraform"
 )
+
+type generateFun func(opts common.ManifestGenOptions) (map[string]string, error)
 
 // NewCmd returns a cobra.Command for Implementation manifest generation operations.
 func NewCmd() *cobra.Command {
@@ -29,47 +32,65 @@ func NewCmd() *cobra.Command {
 }
 
 // HandleInteractiveSession is responsible for handling interactive session with user
-func HandleInteractiveSession(opts common.ManifestGenOptions) error{
-	tool := askForImplementationTool()
-	basedToolDir := common.AskForOutputDirectory("Path to based tool template", "")
-	if tool == helmType {
-		var helmCfg manifestgen.HelmConfig
-		helmCfg.ManifestPath = opts.ManifestPath
-		helmCfg.ChartName = basedToolDir
-		files, err := manifestgen.GenerateHelmManifests(&helmCfg)
-		if err != nil {
-			return errors.Wrap(err, "while generating Helm manifests")
-		}
-
-		if err := manifestgen.WriteManifestFiles(opts.Directory, files, opts.Overwrite); err != nil {
-			return errors.Wrap(err, "while writing manifest files")
-		}
+func HandleInteractiveSession(opts common.ManifestGenOptions) (map[string]string, error) {
+	tool, err := askForImplementationTool()
+	if err != nil {
+		return nil, errors.Wrap(err, "while asking for used implementation tool")
 	}
 
-	if tool == terraformType {
-		var tfContentCfg manifestgen.TerraformConfig
-		tfContentCfg.ManifestPath = opts.ManifestPath
-		tfContentCfg.ModulePath = basedToolDir
-		files, err := manifestgen.GenerateTerraformManifests(&tfContentCfg)
-		if err != nil {
-			return errors.Wrap(err, "while generating content files")
-		}
-
-		if err := manifestgen.WriteManifestFiles(opts.Directory, files, opts.Overwrite); err != nil {
-			return errors.Wrap(err, "while writing manifest files")
-		}
+	toolAction := map[string]generateFun{
+		helmTool:      generateHelmManifests,
+		terraformTool: generateTerraformManifests,
 	}
 
-	return nil
+	return toolAction[tool](opts)
 }
 
-func askForImplementationTool() string{
-	var selectType string
-	availableManifestsType := []string{helmType, terraformType}
-	typePrompt := &survey.Select{
-		Message: "Based on which tool do you want to generate implementation:",
-		Options: availableManifestsType,
+func generateHelmManifests(opts common.ManifestGenOptions) (map[string]string, error) {
+	basedToolDir, err := common.AskForDirectory("Path to helm template", "")
+	if err != nil {
+		return nil, errors.Wrap(err, "while asking for path to helm template")
 	}
-	survey.AskOne(typePrompt, &selectType)
-	return selectType
+	var helmCfg manifestgen.HelmConfig
+	helmCfg.ManifestPath = "cap.implementation." + opts.ManifestPath
+	helmCfg.ChartName = basedToolDir
+	helmCfg.ManifestMetadata = opts.Metadata
+	if slices.Contains(opts.ManifestsType, common.InterfaceType) {
+		helmCfg.InterfacePathWithRevision = "cap.interface." + opts.ManifestPath + ":0.1.0"
+	}
+	files, err := manifestgen.GenerateHelmManifests(&helmCfg)
+	if err != nil {
+		return nil, errors.Wrap(err, "while generating Helm manifests")
+	}
+	return files, nil
+}
+
+func generateTerraformManifests(opts common.ManifestGenOptions) (map[string]string, error) {
+	basedToolDir, err := common.AskForDirectory("Path to terraform template", "")
+	if err != nil {
+		return nil, errors.Wrap(err, "while asking for path to terraform template")
+	}
+	var tfContentCfg manifestgen.TerraformConfig
+	tfContentCfg.ManifestPath = "cap.implementation." + opts.ManifestPath
+	tfContentCfg.ModulePath = basedToolDir
+	tfContentCfg.ManifestMetadata = opts.Metadata
+	if slices.Contains(opts.ManifestsType, common.InterfaceType) {
+		tfContentCfg.InterfacePathWithRevision = "cap.interface." + opts.ManifestPath + ":0.1.0"
+	}
+	files, err := manifestgen.GenerateTerraformManifests(&tfContentCfg)
+	if err != nil {
+		return nil, errors.Wrap(err, "while generating Terraform manifests")
+	}
+	return files, nil
+}
+
+func askForImplementationTool() (string, error) {
+	var selectTool string
+	availableManifestsTool := []string{helmTool, terraformTool}
+	toolPrompt := &survey.Select{
+		Message: "Based on which tool do you want to generate implementation:",
+		Options: availableManifestsTool,
+	}
+	err := survey.AskOne(toolPrompt, &selectTool)
+	return selectTool, err
 }

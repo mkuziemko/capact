@@ -1,24 +1,19 @@
 package manifestgen
 
 import (
-	"fmt"
 	"strings"
 
 	"capact.io/capact/cmd/cli/cmd/alpha/manifest-gen/common"
 	"capact.io/capact/cmd/cli/cmd/alpha/manifest-gen/implementation"
 	_interface "capact.io/capact/cmd/cli/cmd/alpha/manifest-gen/interface"
+	"capact.io/capact/internal/cli/alpha/manifestgen"
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"k8s.io/utils/strings/slices"
 )
 
-var (
-	interfaceType      = "interface"
-	interfaceGroupType = "interfaceGroup"
-	implementationType = "implementation"
-	typeType           = "type"
-)
+type getManifestFun func(cfg *manifestgen.InterfaceConfig) (map[string]string, error)
 
 // NewCmd returns a cobra.Command for content generation operations.
 func NewCmd() *cobra.Command {
@@ -27,11 +22,8 @@ func NewCmd() *cobra.Command {
 		Use:   "manifest-gen",
 		Short: "Manifests generation",
 		Long:  "Subcommand for various manifest generation operations",
-		Args:  cobra.MaximumNArgs(1),
+		Args:  cobra.MaximumNArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if len(args) > 0 {
-				fmt.Println("To handle") //TODO
-			}
 			return askInteractivelyForParameters(opts)
 		},
 	}
@@ -46,33 +38,96 @@ func NewCmd() *cobra.Command {
 }
 
 func askInteractivelyForParameters(opts common.ManifestGenOptions) error {
-	opts.ManifestsType = askForManifestType()
-	opts.Directory = common.AskForOutputDirectory("path to the output directory for the generated manifests", "generated")
-	opts.Overwrite = askIfOverwrite()
-	opts.ManifestPath = askForManifestPath()
-
-	if slices.Contains(opts.ManifestsType, interfaceType) {
-		_interface.GenerateInterfaceFile(opts)
+	var err error
+	opts.ManifestsType, err = askForManifestType()
+	if err != nil {
+		return errors.Wrap(err, "while asking for manifest type")
 	}
 
-	if slices.Contains(opts.ManifestsType, interfaceGroupType) {
-		_interface.GenerateInterfaceGroupFile(opts)
+	opts.Directory, err = common.AskForDirectory("path to the output directory for the generated manifests", "generated")
+	if err != nil {
+		return errors.Wrap(err, "while asking for output directory")
 	}
 
-	if slices.Contains(opts.ManifestsType, typeType) {
-		_interface.GenerateTypeFile(opts)
+	opts.Overwrite, err = askIfOverwrite()
+	if err != nil {
+		return errors.Wrap(err, "while asking if overwrite existing manifest files")
 	}
 
-	if slices.Contains(opts.ManifestsType, implementationType) {
-		implementation.HandleInteractiveSession(opts)
+	opts.ManifestPath, err = askForManifestPathSuffix()
+	if err != nil {
+		return errors.Wrap(err, "while asking for manifest path suffix")
 	}
 
+	metadata, err := askForCommonMetadataInformation()
+	if err != nil {
+		return errors.Wrap(err, "while getting the common metadata information")
+	}
+	opts.Metadata = *metadata
+
+	var mergeFiles map[string]string
+	if slices.Contains(opts.ManifestsType, common.InterfaceType) {
+		files, err := GenerateInterfaceFile(opts, manifestgen.GenerateInterfaceTemplatingConfig)
+		if err != nil {
+			return errors.Wrap(err, "while generating interface templating config")
+		}
+		mergeFiles = MergeMaps(mergeFiles, files)
+	}
+
+	if slices.Contains(opts.ManifestsType, common.InterfaceGroupType) {
+		files, err := GenerateInterfaceFile(opts, manifestgen.GenerateInterfaceGroupTemplatingConfig)
+		if err != nil {
+			return errors.Wrap(err, "while generating interface group templating config")
+		}
+		mergeFiles = MergeMaps(mergeFiles, files)
+	}
+
+	if slices.Contains(opts.ManifestsType, common.TypeType) {
+		files, err := GenerateInterfaceFile(opts, manifestgen.GenerateTypeTemplatingConfig)
+		if err != nil {
+			return errors.Wrap(err, "while generating type templating config")
+		}
+		mergeFiles = MergeMaps(mergeFiles, files)
+	}
+
+	if slices.Contains(opts.ManifestsType, common.ImplementationType) {
+		files, err := implementation.HandleInteractiveSession(opts)
+		if err != nil {
+			return errors.Wrap(err, "while generating implementation tool")
+		}
+		mergeFiles = MergeMaps(mergeFiles, files)
+	}
+
+	if err := manifestgen.WriteManifestFiles(opts.Directory, mergeFiles, opts.Overwrite); err != nil {
+		return errors.Wrap(err, "while writing manifest files")
+	}
 	return nil
 }
 
-func askForManifestType() []string {
+func MergeMaps(maps ...map[string]string) (result map[string]string) {
+	result = make(map[string]string)
+	for _, m := range maps {
+		for k, v := range m {
+			result[k] = v
+		}
+	}
+	return result
+}
+
+func GenerateInterfaceFile(opts common.ManifestGenOptions, fn getManifestFun) (map[string]string, error) {
+	var interfaceCfg manifestgen.InterfaceConfig
+	interfaceCfg.ManifestPath = "cap.interface." + opts.ManifestPath
+	interfaceCfg.ManifestMetadata = opts.Metadata
+	files, err := fn(&interfaceCfg)
+	if err != nil {
+		return nil, errors.Wrap(err, "while generating content files")
+	}
+	return files, nil
+}
+
+func askForManifestType() ([]string, error) {
 	var manifestTypes []string
-	availableManifestsType := []string{implementationType, interfaceType, interfaceGroupType, typeType}
+	availableManifestsType := []string{common.ImplementationType, common.InterfaceType, common.InterfaceGroupType, common.TypeType}
 	prompt := []*survey.Question{
 		{
 			Prompt: &survey.MultiSelect{
@@ -82,35 +137,118 @@ func askForManifestType() []string {
 			Validate: survey.MinItems(1),
 		},
 	}
-	survey.Ask(prompt, &manifestTypes)
-	return manifestTypes
+	err := survey.Ask(prompt, &manifestTypes)
+	return manifestTypes, err
 }
 
-func askForManifestPath() string {
+func askForCommonMetadataInformation() (*common.Metadata, error) {
+	var metadata common.Metadata
+	var qs = []*survey.Question{
+		{
+			Name: "DocumentationURL",
+			Prompt: &survey.Input{
+				Message: "What is documentation URL?",
+				Default: "https://example.com",
+			},
+		},
+		{
+			Name: "SupportURL",
+			Prompt: &survey.Input{
+				Message: "What is support URL?",
+				Default: "https://example.com",
+			},
+		},
+	}
+	err := survey.Ask(qs, &metadata)
+	if err != nil {
+		return nil, errors.Wrap(err, "while asking for metadata")
+	}
+
+	maintainers, err := askForMaintainers()
+	if err != nil {
+		return nil, errors.Wrap(err, "while asking for maintainers")
+	}
+	metadata.Maintainers = maintainers
+	return &metadata, nil
+}
+
+func askForMaintainers() ([]common.Maintainers, error) {
+	var maintainers []common.Maintainers
+	for {
+		name := false
+		prompt := &survey.Confirm{
+			Message: "Do you want to add maintainer?",
+		}
+		err := survey.AskOne(prompt, &name)
+		if err != nil {
+			return nil, errors.Wrap(err, "while asking if add maintainers")
+		}
+		if !name {
+			return maintainers, nil
+		}
+
+		maintainer, err := askForMaintainer()
+		if err != nil {
+			return nil, errors.Wrap(err, "while asking if for maintainer")
+		}
+		maintainers = append(maintainers, maintainer)
+	}
+}
+
+func askForMaintainer() (common.Maintainers, error) {
+	var maintainer common.Maintainers
+	var qs = []*survey.Question{
+		{
+			Name: "Email",
+			Prompt: &survey.Input{
+				Message: "What is email",
+				Default: "dev@example.com",
+			},
+		},
+		{
+			Name: "Name",
+			Prompt: &survey.Input{
+				Message: "What is a name?",
+				Default: "Example Dev",
+			},
+		},
+		{
+			Name: "Url",
+			Prompt: &survey.Input{
+				Message: "What is a Url?",
+				Default: "https://example.com",
+			},
+		},
+	}
+	err := survey.Ask(qs, &maintainer)
+	return maintainer, err
+}
+
+func askForManifestPathSuffix() (string, error) {
 	var manifestPath string
 	prompt := []*survey.Question{
 		{
 			Prompt: &survey.Input{
-				Message: "Manifest path",
+				Message: "Manifest path suffix",
 			},
 			Validate: func(ans interface{}) error {
-				if str, ok := ans.(string); !ok || !strings.HasPrefix(str, "cap.interface.") || len(strings.Split(str, ".")) < 4 {
-					return errors.New(`manifest path must be in format "cap.interface.[PREFIX].[NAME]"`)
+				if str, ok := ans.(string); !ok || len(strings.Split(str, ".")) < 2 {
+					return errors.New(`manifest path suffix must be in format "[PREFIX].[NAME]"`)
 
 				}
 				return nil
 			},
 		},
 	}
-	survey.Ask(prompt, &manifestPath)
-	return manifestPath
+	err := survey.Ask(prompt, &manifestPath)
+	return manifestPath, err
 }
 
-func askIfOverwrite() bool {
+func askIfOverwrite() (bool, error) {
 	overwrite := false
 	prompt := &survey.Confirm{
 		Message: "Do you want to overwrite existing manifest files?",
 	}
-	survey.AskOne(prompt, &overwrite)
-	return overwrite
+	err := survey.AskOne(prompt, &overwrite)
+	return overwrite, err
 }

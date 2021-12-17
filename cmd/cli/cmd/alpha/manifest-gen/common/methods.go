@@ -7,18 +7,23 @@ import (
 	"path/filepath"
 )
 
-// AskForOutputDirectory ask for a directory output
-func AskForOutputDirectory(msg string, defaultValue string) string{
-	directory := ""
+// AskForDirectory asks for a directory using suggestion options for suggesting the list of dirs
+func AskForDirectory(msg string, defaultDir string) (string, error){
+	chosenDir := ""
 	directoryPrompt := &survey.Input{
 		Message: msg,
 		Suggest: func (toComplete string) []string {
-			files, _ := filepath.Glob(toComplete + "*")
+			files, err := filepath.Glob(toComplete + "*")
+			if err != nil {
+				fmt.Println("Cannot getting the names of files")
+				return nil
+			}
 			var dirs []string
 			for _, match := range files {
 				file, err := os.Stat(match)
 				if err != nil {
-					fmt.Println("Cannot stat the file")
+					fmt.Println("Cannot getting the information about the file")
+					return nil
 				}
 				if file.IsDir() {
 					dirs = append(dirs, match)
@@ -27,10 +32,10 @@ func AskForOutputDirectory(msg string, defaultValue string) string{
 			return dirs
 		},
 	}
-	if defaultValue != "" {
-		directoryPrompt.Default = defaultValue
+	if defaultDir != "" {
+		directoryPrompt.Default = defaultDir
 	}
 
-	survey.AskOne(directoryPrompt, &directory)
-	return directory
+	err := survey.AskOne(directoryPrompt, &chosenDir)
+	return chosenDir, err
 }

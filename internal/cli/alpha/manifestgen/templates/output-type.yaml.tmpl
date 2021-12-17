@@ -6,12 +6,16 @@ metadata:
   name: config
   displayName: "{{.Prefix }} config"
   description: "Type representing a {{ .Prefix }} config"
-  documentationURL: https://example.com
-  supportURL: https://example.com
+  documentationURL: {{.Metadata.DocumentationURL}}
+  supportURL: {{.Metadata.SupportURL}}
+  {{- if .Metadata.Maintainers }}
   maintainers:
-    - email: dev@example.com
-      name: Example Dev
-      url: https://example.com
+  {{- range $maintainer := .Metadata.Maintainers}}
+    - email: {{$maintainer.Email}}
+      name: {{$maintainer.Name}}
+      url: {{$maintainer.Url}}
+  {{- end}}
+  {{- end}}
 spec:
   jsonSchema:
     # TODO(ContentDeveloper): Put the properties of your Interface output Type in form of a JSON Schema

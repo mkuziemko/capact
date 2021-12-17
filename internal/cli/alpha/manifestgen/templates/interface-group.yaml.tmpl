@@ -6,10 +6,14 @@ metadata:
   name: "{{ .Name }}"
   displayName: "{{ .Name }}"
   description: "{{ .Name }} related Interfaces"
-  documentationURL: https://example.com
-  supportURL: https://example.com
+  documentationURL: {{.Metadata.DocumentationURL}}
+  supportURL: {{.Metadata.SupportURL}}
   iconURL: https://example.com/icon.png
+  {{- if .Metadata.Maintainers }}
   maintainers:
-    - email: dev@example.cop
-      name: Example Dev
-      url: https://example.com
+  {{- range $maintainer := .Metadata.Maintainers}}
+    - email: {{$maintainer.Email}}
+      name: {{$maintainer.Name}}
+      url: {{$maintainer.Url}}
+  {{- end}}
+  {{- end}}

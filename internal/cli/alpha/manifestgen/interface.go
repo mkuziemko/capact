@@ -93,9 +93,7 @@ func generateFile(cfg *InterfaceConfig, fn []getManifestFun) (map[string]string,
 		if err != nil {
 			return nil, errors.Wrap(err, "while getting metadata for manifest")
 		}
-
 		manifestPath := fmt.Sprintf("%s.%s", metadata.Metadata.Prefix, metadata.Metadata.Name)
-
 		result[manifestPath] = m
 	}
 
@@ -113,6 +111,7 @@ func getInterfaceGroupTemplatingConfig(cfg *InterfaceConfig) (*templatingConfig,
 		Template: interfaceGroupManifestTemplate,
 		Input: &interfaceGroupTemplatingInput{
 			templatingInput: templatingInput{
+				Metadata: cfg.ManifestMetadata,
 				Name:     groupName,
 				Prefix:   groupPrefix,
 				Revision: cfg.ManifestRevision,
@@ -131,6 +130,7 @@ func getInterfaceTemplatingConfig(cfg *InterfaceConfig) (*templatingConfig, erro
 		Template: interfaceManifestTemplate,
 		Input: &interfaceTemplatingInput{
 			templatingInput: templatingInput{
+				Metadata: cfg.ManifestMetadata,
 				Name:     name,
 				Prefix:   prefix,
 				Revision: cfg.ManifestRevision,
@@ -154,6 +154,7 @@ func getInterfaceInputTypeTemplatingConfig(cfg *InterfaceConfig) (*templatingCon
 		Template: typeManifestTemplate,
 		Input: &typeTemplatingInput{
 			templatingInput: templatingInput{
+				Metadata: cfg.ManifestMetadata,
 				Name:     name,
 				Prefix:   prefix,
 				Revision: cfg.ManifestRevision,
@@ -173,6 +174,7 @@ func getInterfaceOutputTypeTemplatingConfig(cfg *InterfaceConfig) (*templatingCo
 		Template: outputTypeManifestTemplate,
 		Input: &outputTypeTemplatingInput{
 			templatingInput: templatingInput{
+				Metadata: cfg.ManifestMetadata,
 				Name:     name,
 				Prefix:   prefix,
 				Revision: cfg.ManifestRevision,

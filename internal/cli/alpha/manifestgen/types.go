@@ -8,6 +8,7 @@ import (
 type Config struct {
 	ManifestPath     string
 	ManifestRevision string
+	ManifestMetadata MetaDataInfo
 }
 
 // InterfaceConfig stores input parameters for Interface content generation
@@ -48,6 +49,7 @@ type templatingInput struct {
 	Name     string
 	Prefix   string
 	Revision string
+	Metadata MetaDataInfo
 }
 
 type interfaceGroupTemplatingInput struct {
