@@ -1,0 +1,17 @@
+ocfVersion: 0.0.1
+revision: {{ .Revision }}
+kind: Attribute
+metadata:
+  prefix: "cap.attribute.{{ .Prefix }}"
+  name: "{{ .Name }}"
+  displayName: "{{ .Name }}"
+  description: "{{ .Name }} attribute"
+  documentationURL: {{.Metadata.DocumentationURL}}
+  {{- if .Metadata.Maintainers }}
+  maintainers:
+  {{- range $maintainer := .Metadata.Maintainers}}
+    - email: {{$maintainer.Email}}
+      name: {{$maintainer.Name}}
+      url: {{$maintainer.Url}}
+  {{- end}}
+  {{- end}}

@@ -11,6 +11,10 @@ type Config struct {
 	ManifestMetadata MetaDataInfo
 }
 
+type AttributeConfig struct {
+	Config
+}
+
 // InterfaceConfig stores input parameters for Interface content generation
 type InterfaceConfig struct {
 	Config
@@ -40,6 +44,10 @@ type HelmConfig struct {
 	ChartVersion string
 }
 
+type EmptyImplementationConfig struct {
+	ImplementationConfig
+}
+
 type templatingConfig struct {
 	Template string
 	Input    interface{}
@@ -50,6 +58,10 @@ type templatingInput struct {
 	Prefix   string
 	Revision string
 	Metadata MetaDataInfo
+}
+
+type attributeTemplatingInput struct {
+	templatingInput
 }
 
 type interfaceGroupTemplatingInput struct {
@@ -67,6 +79,12 @@ type outputTypeTemplatingInput struct {
 type typeTemplatingInput struct {
 	templatingInput
 	JSONSchema string
+}
+
+type emptyImplementationTemplatingInput struct {
+	templatingInput
+	InterfacePath     string
+	InterfaceRevision string
 }
 
 type terraformImplementationTemplatingInput struct {

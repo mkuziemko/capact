@@ -18,8 +18,9 @@ type ManifestGenOptions struct {
 }
 
 var (
-	InterfaceType      = "interface"
-	InterfaceGroupType = "interfaceGroup"
-	ImplementationType = "implementation"
-	TypeType           = "type"
+	InterfaceType      = "Interface"
+	InterfaceGroupType = "InterfaceGroup"
+	ImplementationType = "Implementation"
+	TypeType           = "Type"
+	AttributeType      = "Attribute"
 )

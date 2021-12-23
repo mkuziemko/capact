@@ -3,6 +3,7 @@ package manifestgen
 import (
 	"strings"
 
+	"capact.io/capact/cmd/cli/cmd/alpha/manifest-gen/attribute"
 	"capact.io/capact/cmd/cli/cmd/alpha/manifest-gen/common"
 	"capact.io/capact/cmd/cli/cmd/alpha/manifest-gen/implementation"
 	_interface "capact.io/capact/cmd/cli/cmd/alpha/manifest-gen/interface"
@@ -90,6 +91,14 @@ func askInteractivelyForParameters(opts common.ManifestGenOptions) error {
 		mergeFiles = MergeMaps(mergeFiles, files)
 	}
 
+	if slices.Contains(opts.ManifestsType, common.AttributeType) {
+		files, err := attribute.GenerateAttributeFile(opts)
+		if err != nil {
+			return errors.Wrap(err, "while generating type templating config")
+		}
+		mergeFiles = MergeMaps(mergeFiles, files)
+	}
+
 	if slices.Contains(opts.ManifestsType, common.ImplementationType) {
 		files, err := implementation.HandleInteractiveSession(opts)
 		if err != nil {
@@ -127,7 +136,7 @@ func GenerateInterfaceFile(opts common.ManifestGenOptions, fn getManifestFun) (m
 
 func askForManifestType() ([]string, error) {
 	var manifestTypes []string
-	availableManifestsType := []string{common.ImplementationType, common.InterfaceType, common.InterfaceGroupType, common.TypeType}
+	availableManifestsType := []string{common.InterfaceGroupType, common.InterfaceType, common.ImplementationType, common.AttributeType, common.TypeType}
 	prompt := []*survey.Question{
 		{
 			Prompt: &survey.MultiSelect{
