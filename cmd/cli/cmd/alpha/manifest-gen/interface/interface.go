@@ -3,12 +3,15 @@ package _interface
 import (
 	"strings"
 
+	"capact.io/capact/cmd/cli/cmd/alpha/manifest-gen/common"
 	"capact.io/capact/internal/cli"
 	"capact.io/capact/internal/cli/alpha/manifestgen"
 	"capact.io/capact/internal/cli/heredoc"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
+
+type getManifestFun func(cfg *manifestgen.InterfaceConfig) (map[string]string, error)
 
 // NewInterface returns a cobra.Command to bootstrap new Interface manifests.
 func NewInterface() *cobra.Command {
@@ -63,4 +66,17 @@ func NewInterface() *cobra.Command {
 	cmd.Flags().StringVarP(&interfaceCfg.ManifestRevision, "revision", "r", "0.1.0", "Revision of the Interface manifest")
 
 	return cmd
+}
+
+func GenerateInterfaceFile(opts common.ManifestGenOptions, fn getManifestFun) (map[string]string, error) {
+	var interfaceCfg manifestgen.InterfaceConfig
+	interfaceCfg.ManifestPath = common.CreateManifestPath(common.InterfaceType, opts.ManifestPath)
+	interfaceCfg.ManifestMetadata = opts.Metadata
+	interfaceCfg.InputPathWithRevision = opts.TypeInputPath
+	interfaceCfg.OutputPathWithRevision = opts.TypeOutputPath
+	files, err := fn(&interfaceCfg)
+	if err != nil {
+		return nil, errors.Wrap(err, "while generating content files")
+	}
+	return files, nil
 }
