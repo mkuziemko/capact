@@ -54,7 +54,7 @@ func generateHelmManifests(opts common.ManifestGenOptions) (map[string]string, e
 		return nil, errors.Wrap(err, "while asking for path to helm template")
 	}
 	var helmCfg manifestgen.HelmConfig
-	helmCfg.ManifestPath = "cap.implementation." + opts.ManifestPath
+	helmCfg.ManifestPath = common.CreateManifestPath(common.ImplementationType, opts.ManifestPath)
 	helmCfg.ChartName = basedToolDir
 	helmCfg.ManifestMetadata = opts.Metadata
 	if slices.Contains(opts.ManifestsType, common.InterfaceType) {
@@ -73,7 +73,7 @@ func generateTerraformManifests(opts common.ManifestGenOptions) (map[string]stri
 		return nil, errors.Wrap(err, "while asking for path to terraform template")
 	}
 	var tfContentCfg manifestgen.TerraformConfig
-	tfContentCfg.ManifestPath = "cap.implementation." + opts.ManifestPath
+	tfContentCfg.ManifestPath = common.CreateManifestPath(common.ImplementationType, opts.ManifestPath)
 	tfContentCfg.ModulePath = basedToolDir
 	tfContentCfg.ManifestMetadata = opts.Metadata
 	if slices.Contains(opts.ManifestsType, common.InterfaceType) {
@@ -88,7 +88,7 @@ func generateTerraformManifests(opts common.ManifestGenOptions) (map[string]stri
 
 func generateEmptyManifests(opts common.ManifestGenOptions) (map[string]string, error) {
 	var emptyManifestCfg manifestgen.EmptyImplementationConfig
-	emptyManifestCfg.ManifestPath = "cap.implementation." + opts.ManifestPath
+	emptyManifestCfg.ManifestPath = common.CreateManifestPath(common.ImplementationType, opts.ManifestPath)
 	emptyManifestCfg.ManifestMetadata = opts.Metadata
 	if slices.Contains(opts.ManifestsType, common.InterfaceType) {
 		emptyManifestCfg.InterfacePathWithRevision = "cap.interface." + opts.ManifestPath + ":0.1.0"

@@ -68,6 +68,10 @@ func askInteractivelyForParameters(opts common.ManifestGenOptions) error {
 
 	var mergeFiles map[string]string
 	if slices.Contains(opts.ManifestsType, common.InterfaceType) {
+		if slices.Contains(opts.ManifestsType, common.TypeType) {
+			opts.TypeInputPath = common.CreateManifestPath(common.TypeType, opts.ManifestPath) + "-input:0.0.1"
+			opts.TypeOutputPath = common.CreateManifestPath(common.TypeType, opts.ManifestPath) + "config:0.0.1"
+		}
 		files, err := GenerateInterfaceFile(opts, manifestgen.GenerateInterfaceTemplatingConfig)
 		if err != nil {
 			return errors.Wrap(err, "while generating interface templating config")
@@ -125,8 +129,10 @@ func MergeMaps(maps ...map[string]string) (result map[string]string) {
 
 func GenerateInterfaceFile(opts common.ManifestGenOptions, fn getManifestFun) (map[string]string, error) {
 	var interfaceCfg manifestgen.InterfaceConfig
-	interfaceCfg.ManifestPath = "cap.interface." + opts.ManifestPath
+	interfaceCfg.ManifestPath = common.CreateManifestPath(common.InterfaceType, opts.ManifestPath)
 	interfaceCfg.ManifestMetadata = opts.Metadata
+	interfaceCfg.InputPathWithRevision = opts.TypeInputPath
+	interfaceCfg.OutputPathWithRevision = opts.TypeOutputPath
 	files, err := fn(&interfaceCfg)
 	if err != nil {
 		return nil, errors.Wrap(err, "while generating content files")

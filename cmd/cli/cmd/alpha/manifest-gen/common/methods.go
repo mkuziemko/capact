@@ -2,17 +2,18 @@ package common
 
 import (
 	"fmt"
-	"github.com/AlecAivazis/survey/v2"
 	"os"
 	"path/filepath"
+
+	"github.com/AlecAivazis/survey/v2"
 )
 
 // AskForDirectory asks for a directory using suggestion options for suggesting the list of dirs
-func AskForDirectory(msg string, defaultDir string) (string, error){
+func AskForDirectory(msg string, defaultDir string) (string, error) {
 	chosenDir := ""
 	directoryPrompt := &survey.Input{
 		Message: msg,
-		Suggest: func (toComplete string) []string {
+		Suggest: func(toComplete string) []string {
 			files, err := filepath.Glob(toComplete + "*")
 			if err != nil {
 				fmt.Println("Cannot getting the names of files")
@@ -38,4 +39,15 @@ func AskForDirectory(msg string, defaultDir string) (string, error){
 
 	err := survey.AskOne(directoryPrompt, &chosenDir)
 	return chosenDir, err
+}
+
+func CreateManifestPath(manifestType string, suffix string) string {
+	suffixes := map[string]string{
+		InterfaceType:      "interface",
+		InterfaceGroupType: "interfaceGroup",
+		ImplementationType: "implementation",
+		TypeType:           "type",
+		AttributeType:      "attribute",
+	}
+	return "cap." + suffixes[manifestType] + "." + suffix
 }

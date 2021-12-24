@@ -18,6 +18,8 @@ type AttributeConfig struct {
 // InterfaceConfig stores input parameters for Interface content generation
 type InterfaceConfig struct {
 	Config
+	InputPathWithRevision  string
+	OutputPathWithRevision string
 }
 
 // ImplementationConfig stores input parameters for Implementation content generation
@@ -70,6 +72,10 @@ type interfaceGroupTemplatingInput struct {
 
 type interfaceTemplatingInput struct {
 	templatingInput
+	InputTypeName      string
+	InputTypeRevision  string
+	OutputTypeName     string
+	OutputTypeRevision string
 }
 
 type outputTypeTemplatingInput struct {

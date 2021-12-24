@@ -126,6 +126,20 @@ func getInterfaceTemplatingConfig(cfg *InterfaceConfig) (*templatingConfig, erro
 		return nil, errors.Wrap(err, "while getting path and prefix for manifests")
 	}
 
+	var inputPath, inputRevision, outputPath, outputRevision string
+
+	inputPathSlice := strings.SplitN(cfg.InputPathWithRevision, ":", 2)
+	if len(inputPathSlice) == 2 {
+		inputPath = inputPathSlice[0]
+		inputRevision = inputPathSlice[1]
+	}
+
+	outputPathSlice := strings.SplitN(cfg.OutputPathWithRevision, ":", 2)
+	if len(inputPathSlice) == 2 {
+		outputPath = outputPathSlice[0]
+		outputRevision = outputPathSlice[1]
+	}
+
 	return &templatingConfig{
 		Template: interfaceManifestTemplate,
 		Input: &interfaceTemplatingInput{
@@ -135,6 +149,10 @@ func getInterfaceTemplatingConfig(cfg *InterfaceConfig) (*templatingConfig, erro
 				Prefix:   prefix,
 				Revision: cfg.ManifestRevision,
 			},
+			InputTypeName:      inputPath,
+			InputTypeRevision:  inputRevision,
+			OutputTypeName:     outputPath,
+			OutputTypeRevision: outputRevision,
 		},
 	}, nil
 }

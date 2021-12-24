@@ -23,13 +23,13 @@ spec:
     parameters:
       input-parameters:
         typeRef:
-          path: cap.type.{{ .Prefix }}.{{ .Name }}-input
-          revision: 0.1.0
+          path: {{if .InputTypeName}}{{ .InputTypeName }}{{else}}cap.type. # TODO(ContentDeveloper): Put here the path of the input Type{{end}}
+          revision: {{if .InputTypeRevision}}{{ .InputTypeRevision }}{{else}}0.1.0{{end}}
     typeInstances: {}
 
   output:
     typeInstances:
       config:
         typeRef:
-          path: cap.type.{{ .Prefix }}.config
-          revision: 0.1.0
+          path: {{if .OutputTypeName}}{{ .OutputTypeName }}{{else}}cap.type. # TODO(ContentDeveloper): Put here the path of the input Type{{end}}
+          revision: {{if .OutputTypeRevision}}{{ .OutputTypeRevision }}{{else}}0.1.0{{end}}

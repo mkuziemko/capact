@@ -9,12 +9,14 @@ type Maintainers = manifestgen.Maintainer
 
 // ManifestGenOptions is a struct based on which manifests are generated
 type ManifestGenOptions struct {
-	ManifestsType []string
-	ManifestPath  string
-	Directory     string
-	Overwrite     bool
-	Metadata      Metadata
-	InterfacePath string
+	ManifestsType  []string
+	ManifestPath   string
+	Directory      string
+	Overwrite      bool
+	Metadata       Metadata
+	InterfacePath  string
+	TypeInputPath  string
+	TypeOutputPath string
 }
 
 var (

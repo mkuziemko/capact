@@ -11,6 +11,12 @@ import (
 func GenerateEmptyManifests(cfg *EmptyImplementationConfig) (map[string]string, error) {
 	cfgs := make([]*templatingConfig, 0, 2)
 
+	inputTypeCfg, err := getEmptyInputTypeTemplatingConfig(cfg)
+	if err != nil {
+		return nil, errors.Wrap(err, "while getting Implementation templating config")
+	}
+	cfgs = append(cfgs, inputTypeCfg)
+
 	implCfg, err := getEmptyImplementationTemplatingConfig(cfg)
 	if err != nil {
 		return nil, errors.Wrap(err, "while getting Implementation templating config")
@@ -69,6 +75,27 @@ func getEmptyImplementationTemplatingConfig(cfg *EmptyImplementationConfig) (*te
 
 	return &templatingConfig{
 		Template: emptyImplementationManifestTemplate,
+		Input:    input,
+	}, nil
+}
+
+func getEmptyInputTypeTemplatingConfig(cfg *EmptyImplementationConfig) (*templatingConfig, error) {
+	prefix, name, err := splitPathToPrefixAndName(cfg.ManifestPath)
+	if err != nil {
+		return nil, errors.Wrap(err, "while getting prefix and path for manifests")
+	}
+
+	input := &typeTemplatingInput{
+		templatingInput: templatingInput{
+			Metadata: cfg.ManifestMetadata,
+			Name:     name,
+			Prefix:   prefix,
+			Revision: cfg.ManifestRevision,
+		},
+	}
+
+	return &templatingConfig{
+		Template: typeManifestTemplate,
 		Input:    input,
 	}, nil
 }

@@ -8,7 +8,7 @@ import (
 
 func GenerateAttributeFile(opts common.ManifestGenOptions) (map[string]string, error) {
 	var attributeCfg manifestgen.AttributeConfig
-	attributeCfg.ManifestPath = "cap.interface." + opts.ManifestPath
+	attributeCfg.ManifestPath = common.CreateManifestPath(common.AttributeType, opts.ManifestPath)
 	attributeCfg.ManifestMetadata = opts.Metadata
 	files, err := manifestgen.GenerateAttributeTemplatingConfig(&attributeCfg)
 	if err != nil {
