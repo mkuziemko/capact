@@ -24,9 +24,7 @@ func GenerateAttributeTemplatingConfig(cfg *AttributeConfig) (map[string]string,
 		},
 	}
 
-	cfgs := make([]*templatingConfig, 0, 4)
-	cfgs = append(cfgs, tc)
-	generated, err := generateManifests(cfgs)
+	generated, err := generateManifests([]*templatingConfig{tc})
 	if err != nil {
 		return nil, errors.Wrap(err, "while generating manifests")
 	}

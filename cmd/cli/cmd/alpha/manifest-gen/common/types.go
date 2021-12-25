@@ -17,12 +17,15 @@ type ManifestGenOptions struct {
 	InterfacePath  string
 	TypeInputPath  string
 	TypeOutputPath string
+	Revision       string
 }
 
 var (
-	InterfaceType      = "Interface"
-	InterfaceGroupType = "InterfaceGroup"
-	ImplementationType = "Implementation"
-	TypeType           = "Type"
-	AttributeType      = "Attribute"
+	InterfaceManifest      = "Interface"
+	InterfaceGroupManifest = "InterfaceGroup"
+	ImplementationManifest = "Implementation"
+	TypeManifest           = "Type"
+	AttributeManifest      = "Attribute"
+	GCPProvider            = "GCP"
+	AWSProvider            = "AWS"
 )

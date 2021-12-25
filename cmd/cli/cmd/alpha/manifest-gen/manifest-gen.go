@@ -60,22 +60,28 @@ func askInteractivelyForParameters(opts common.ManifestGenOptions) error {
 	}
 	opts.Metadata = *metadata
 
-	typeFuncMap := map[string]getManifestFun{
-		common.InterfaceType:      generateInterface,
-		common.InterfaceGroupType: generateGroupInterface,
-		common.TypeType:           generateType,
-		common.AttributeType:      generateAttribute,
-		common.ImplementationType: generateImplementation,
+	revision, err := askForManifestRevision()
+	if err != nil {
+		return errors.Wrap(err, "while getting the common metadata information")
+	}
+	opts.Revision = revision
+
+	generatingManifestsFun := map[string]getManifestFun{
+		common.AttributeManifest:      generateAttribute,
+		common.TypeManifest:           generateType,
+		common.InterfaceGroupManifest: generateInterfaceGroup,
+		common.InterfaceManifest:      generateInterface,
+		common.ImplementationManifest: generateImplementation,
 	}
 	var mergeFiles map[string]string
 
-	for k, v := range typeFuncMap {
-		if slices.Contains(opts.ManifestsType, k) {
-			files, err := v(opts)
+	for manifestType, fn := range generatingManifestsFun {
+		if slices.Contains(opts.ManifestsType, manifestType) {
+			files, err := fn(opts)
 			if err != nil {
-				return errors.Wrap(err, "when generating the file")
+				return errors.Wrap(err, "while generating manifest file")
 			}
-			mergeFiles = MergeMaps(mergeFiles, files)
+			mergeFiles = mergeManifests(mergeFiles, files)
 		}
 	}
 
@@ -85,11 +91,11 @@ func askInteractivelyForParameters(opts common.ManifestGenOptions) error {
 	return nil
 }
 
-func MergeMaps(maps ...map[string]string) (result map[string]string) {
+func mergeManifests(manifestsFiles ...map[string]string) (result map[string]string) {
 	result = make(map[string]string)
-	for _, m := range maps {
-		for k, v := range m {
-			result[k] = v
+	for _, manifestFiles := range manifestsFiles {
+		for path, fileName := range manifestFiles {
+			result[path] = fileName
 		}
 	}
 	return result

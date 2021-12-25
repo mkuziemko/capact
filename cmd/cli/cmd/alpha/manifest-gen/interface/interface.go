@@ -70,7 +70,8 @@ func NewInterface() *cobra.Command {
 
 func GenerateInterfaceFile(opts common.ManifestGenOptions, fn getManifestFun) (map[string]string, error) {
 	var interfaceCfg manifestgen.InterfaceConfig
-	interfaceCfg.ManifestPath = common.CreateManifestPath(common.InterfaceType, opts.ManifestPath)
+	interfaceCfg.ManifestPath = common.CreateManifestPath(common.InterfaceManifest, opts.ManifestPath)
+	interfaceCfg.ManifestRevision = opts.Revision
 	interfaceCfg.ManifestMetadata = opts.Metadata
 	interfaceCfg.InputPathWithRevision = opts.TypeInputPath
 	interfaceCfg.OutputPathWithRevision = opts.TypeOutputPath

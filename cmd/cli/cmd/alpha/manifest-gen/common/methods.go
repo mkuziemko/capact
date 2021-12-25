@@ -43,11 +43,11 @@ func AskForDirectory(msg string, defaultDir string) (string, error) {
 
 func CreateManifestPath(manifestType string, suffix string) string {
 	suffixes := map[string]string{
-		InterfaceType:      "interface",
-		InterfaceGroupType: "interfaceGroup",
-		ImplementationType: "implementation",
-		TypeType:           "type",
-		AttributeType:      "attribute",
+		AttributeManifest:      "attribute",
+		TypeManifest:           "type",
+		InterfaceManifest:      "interface",
+		InterfaceGroupManifest: "interfaceGroup",
+		ImplementationManifest: "implementation",
 	}
 	return "cap." + suffixes[manifestType] + "." + suffix
 }

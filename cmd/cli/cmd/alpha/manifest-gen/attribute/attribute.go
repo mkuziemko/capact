@@ -8,8 +8,9 @@ import (
 
 func GenerateAttributeFile(opts common.ManifestGenOptions) (map[string]string, error) {
 	var attributeCfg manifestgen.AttributeConfig
-	attributeCfg.ManifestPath = common.CreateManifestPath(common.AttributeType, opts.ManifestPath)
+	attributeCfg.ManifestPath = common.CreateManifestPath(common.AttributeManifest, opts.ManifestPath)
 	attributeCfg.ManifestMetadata = opts.Metadata
+	attributeCfg.ManifestRevision = opts.Revision
 	files, err := manifestgen.GenerateAttributeTemplatingConfig(&attributeCfg)
 	if err != nil {
 		return nil, errors.Wrap(err, "while generating content files")

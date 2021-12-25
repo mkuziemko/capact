@@ -10,7 +10,7 @@ import (
 
 func askForManifestType() ([]string, error) {
 	var manifestTypes []string
-	availableManifestsType := []string{common.InterfaceGroupType, common.InterfaceType, common.ImplementationType, common.AttributeType, common.TypeType}
+	availableManifestsType := []string{common.AttributeManifest, common.TypeManifest, common.InterfaceGroupManifest, common.InterfaceManifest, common.ImplementationManifest}
 	prompt := []*survey.Question{
 		{
 			Prompt: &survey.MultiSelect{
@@ -134,4 +134,25 @@ func askIfOverwrite() (bool, error) {
 	}
 	err := survey.AskOne(prompt, &overwrite)
 	return overwrite, err
+}
+
+func askForManifestRevision() (string, error) {
+	var manifestRevision string
+	prompt := []*survey.Question{
+		{
+			Prompt: &survey.Input{
+				Message: "Revision of the manifests",
+				Default: "0.1.0",
+			},
+			Validate: func(ans interface{}) error {
+				if str, ok := ans.(string); !ok || len(strings.Split(str, ".")) < 3 {
+					return errors.New(`manifest path suffix must be in format "[version].[version].[version]"`)
+
+				}
+				return nil
+			},
+		},
+	}
+	err := survey.Ask(prompt, &manifestRevision)
+	return manifestRevision, err
 }

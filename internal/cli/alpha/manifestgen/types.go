@@ -11,6 +11,7 @@ type Config struct {
 	ManifestMetadata MetaDataInfo
 }
 
+// AttributeConfig stores input parameters for Attribute content generation
 type AttributeConfig struct {
 	Config
 }
