@@ -53,7 +53,7 @@ func generateAttribute(opts common.ManifestGenOptions) (map[string]string, error
 }
 
 func generateImplementation(opts common.ManifestGenOptions) (map[string]string, error) {
-	files, err := implementation.HandleInteractiveSession(opts)
+	files, err := implementation.GenerateImplementation(opts)
 	if err != nil {
 		return nil, errors.Wrap(err, "while generating implementation tool")
 	}

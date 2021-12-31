@@ -37,8 +37,8 @@ func NewCmd() *cobra.Command {
 	return cmd
 }
 
-// HandleInteractiveSession is responsible for handling interactive session with user
-func HandleInteractiveSession(opts common.ManifestGenOptions) (map[string]string, error) {
+// GenerateImplementation is responsible for generating implementation based on tool
+func GenerateImplementation(opts common.ManifestGenOptions) (map[string]string, error) {
 	tool, err := askForImplementationTool()
 	if err != nil {
 		return nil, errors.Wrap(err, "while asking for used implementation tool")
@@ -115,8 +115,9 @@ func generateEmptyManifests(opts common.ManifestGenOptions) (map[string]string, 
 	var emptyManifestCfg manifestgen.EmptyImplementationConfig
 	emptyManifestCfg.ManifestPath = common.CreateManifestPath(common.ImplementationManifest, opts.ManifestPath)
 	emptyManifestCfg.ManifestMetadata = opts.Metadata
+	emptyManifestCfg.ManifestRevision = opts.Revision
 	if slices.Contains(opts.ManifestsType, common.InterfaceManifest) {
-		emptyManifestCfg.InterfacePathWithRevision = "cap.interface." + opts.ManifestPath + ":0.1.0"
+		emptyManifestCfg.InterfacePathWithRevision = "cap.interface." + opts.ManifestPath + ":" + opts.Revision
 	}
 	files, err := manifestgen.GenerateEmptyManifests(&emptyManifestCfg)
 	if err != nil {

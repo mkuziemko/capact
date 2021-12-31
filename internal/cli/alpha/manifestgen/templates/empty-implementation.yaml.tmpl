@@ -52,21 +52,19 @@ spec:
     runnerInterface: argo.run
     args:
       workflow:
-        entrypoint: deploy
+        entrypoint: {{ .Name }}
         templates:
-          - name: deploy
+          - name: {{ .Name }}
             inputs:
               artifacts:
                 - name: input-parameters
                 - name: additional-parameters
                   optional: true
             outputs:             
-              artifacts:                
-                - name: {{ .Name }}
-                  from: "test"
+              artifacts: {} # TODO(ContentDeveloper): Put here the output artifact if needed
             steps: {} # TODO(ContentDeveloper): Put here the steps for the interface
 
-          - name: echo
+          - name: prepare-parameters
             inputs:
                 artifacts:
                   - name: input-parameters
@@ -75,10 +73,8 @@ spec:
                     path: /yamls/additionalinput.yaml
                     optional: true
             outputs:
-              artifacts:
-              - name: hello
-                path: /tmp/hello.yaml
+              artifacts: {} # TODO(ContentDeveloper): Put here the output artifact if needed
             container:
               image: alpine:latest
               command: [sh, -c]
-              args: ["sleep 1; echo 'greeting: hello capact' >/tmp/hello.yaml"]
+              args: ["sleep 1; echo 'greeting: hello capact'"]

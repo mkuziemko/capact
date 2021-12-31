@@ -59,8 +59,14 @@ func askForMaintainers() ([]common.Maintainers, error) {
 	var maintainers []common.Maintainers
 	for {
 		name := false
+		message := ""
+		if len(maintainers) < 1 {
+			message = "Do you want to add maintainer?"
+		} else {
+			message = "Do you want to add another maintainer?"
+		}
 		prompt := &survey.Confirm{
-			Message: "Do you want to add maintainer?",
+			Message: message,
 		}
 		err := survey.AskOne(prompt, &name)
 		if err != nil {

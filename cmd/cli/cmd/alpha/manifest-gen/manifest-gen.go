@@ -54,17 +54,17 @@ func askInteractivelyForParameters(opts common.ManifestGenOptions) error {
 		return errors.Wrap(err, "while asking for manifest path suffix")
 	}
 
-	metadata, err := askForCommonMetadataInformation()
-	if err != nil {
-		return errors.Wrap(err, "while getting the common metadata information")
-	}
-	opts.Metadata = *metadata
-
 	revision, err := askForManifestRevision()
 	if err != nil {
 		return errors.Wrap(err, "while getting the common metadata information")
 	}
 	opts.Revision = revision
+
+	metadata, err := askForCommonMetadataInformation()
+	if err != nil {
+		return errors.Wrap(err, "while getting the common metadata information")
+	}
+	opts.Metadata = *metadata
 
 	generatingManifestsFun := map[string]getManifestFun{
 		common.AttributeManifest:      generateAttribute,
