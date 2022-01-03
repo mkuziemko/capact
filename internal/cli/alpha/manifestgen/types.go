@@ -47,6 +47,7 @@ type HelmConfig struct {
 	ChartVersion string
 }
 
+// EmptyImplementationConfig stores input parameters for empty Implementation content generation.
 type EmptyImplementationConfig struct {
 	ImplementationConfig
 }

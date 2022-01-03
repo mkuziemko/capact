@@ -5,17 +5,23 @@ import (
 	"sigs.k8s.io/yaml"
 )
 
+// Maintainer holds metadata information about a maintainer
 type Maintainer struct {
+	// Email is a email of the maintainer
 	Email string `yaml:"email"`
-	Name  string `yaml:"name"`
-	Url   string `yaml:"url"`
+	// Name is a name of the maintainer
+	Name string `yaml:"name"`
+	// URL is a URL address
+	URL string `yaml:"url"`
 }
 
+// MetaDataInfo holds metadata information about manifest file
 type MetaDataInfo struct {
 	Name             string       `yaml:"name"`
 	Prefix           string       `yaml:"prefix"`
 	DocumentationURL string       `yaml:"documentationURL"`
 	SupportURL       string       `yaml:"supportURL"`
+	IconURL          string       `yaml:"iconURL"`
 	Maintainers      []Maintainer `yaml:"maintainers"`
 }
 

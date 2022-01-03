@@ -31,7 +31,6 @@ func GenerateEmptyManifests(cfg *EmptyImplementationConfig) (map[string]string, 
 	result := make(map[string]string, len(generated))
 
 	for _, m := range generated {
-		fmt.Println("m is", m)
 		metadata, err := unmarshalMetadata([]byte(m))
 		if err != nil {
 			return nil, errors.Wrap(err, "while getting metadata for manifest")

@@ -60,14 +60,17 @@ func GenerateInterfaceManifests(cfg *InterfaceConfig) (map[string]string, error)
 	return result, nil
 }
 
+// GenerateInterfaceTemplatingConfig generates Interface templating config
 func GenerateInterfaceTemplatingConfig(cfg *InterfaceConfig) (map[string]string, error) {
 	return generateFile(cfg, []getManifestFun{getInterfaceTemplatingConfig})
 }
 
+// GenerateInterfaceGroupTemplatingConfig generates InterfaceGroup templating config
 func GenerateInterfaceGroupTemplatingConfig(cfg *InterfaceConfig) (map[string]string, error) {
 	return generateFile(cfg, []getManifestFun{getInterfaceGroupTemplatingConfig})
 }
 
+// GenerateTypeTemplatingConfig generates Type templating config
 func GenerateTypeTemplatingConfig(cfg *InterfaceConfig) (map[string]string, error) {
 	return generateFile(cfg, []getManifestFun{getInterfaceInputTypeTemplatingConfig, getInterfaceOutputTypeTemplatingConfig})
 }

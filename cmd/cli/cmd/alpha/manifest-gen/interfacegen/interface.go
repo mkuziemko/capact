@@ -1,4 +1,4 @@
-package _interface
+package interfacegen
 
 import (
 	"strings"
@@ -24,7 +24,7 @@ func NewInterface() *cobra.Command {
 		Long:    "Generate new InterfaceGroup, Interface and associated Type manifests",
 		Example: heredoc.WithCLIName(`
 			# Generate manifests for the cap.interface.database.postgresql.install Interface
-			<cli> alpha content interface cap.interface.database.postgresql install`, cli.Name),
+			<cli> alpha content interface cap.interface.database.postgresql.install`, cli.Name),
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) != 1 {
 				return errors.New("accepts only one argument")
@@ -39,6 +39,7 @@ func NewInterface() *cobra.Command {
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			interfaceCfg.ManifestPath = args[0]
+			interfaceCfg.ManifestMetadata = common.GetDefaultMetadata()
 
 			files, err := manifestgen.GenerateInterfaceManifests(&interfaceCfg)
 			if err != nil {
@@ -68,6 +69,7 @@ func NewInterface() *cobra.Command {
 	return cmd
 }
 
+// GenerateInterfaceFile generates a interface file
 func GenerateInterfaceFile(opts common.ManifestGenOptions, fn getManifestFun) (map[string]string, error) {
 	var interfaceCfg manifestgen.InterfaceConfig
 	interfaceCfg.ManifestPath = common.CreateManifestPath(common.InterfaceManifest, opts.ManifestPath)

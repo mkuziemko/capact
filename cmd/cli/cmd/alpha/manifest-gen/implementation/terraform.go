@@ -3,11 +3,13 @@ package implementation
 import (
 	"strings"
 
+	"capact.io/capact/cmd/cli/cmd/alpha/manifest-gen/common"
 	"capact.io/capact/internal/cli"
 	"capact.io/capact/internal/cli/alpha/manifestgen"
 	"capact.io/capact/internal/cli/heredoc"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	"k8s.io/utils/strings/slices"
 )
 
 // NewTerraform returns a cobra.Command to bootstrap Terraform based manifests.
@@ -43,6 +45,7 @@ func NewTerraform() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			tfContentCfg.ManifestPath = args[0]
 			tfContentCfg.ModulePath = args[1]
+			tfContentCfg.ManifestMetadata = common.GetDefaultMetadata()
 
 			files, err := manifestgen.GenerateTerraformManifests(&tfContentCfg)
 			if err != nil {
@@ -75,3 +78,34 @@ func NewTerraform() *cobra.Command {
 	return cmd
 }
 
+func generateTerraformManifests(opts common.ManifestGenOptions) (map[string]string, error) {
+	basedToolDir, err := common.AskForDirectory("Path to terraform template", "")
+	if err != nil {
+		return nil, errors.Wrap(err, "while asking for path to terraform template")
+	}
+
+	provider, err := askForProvider()
+	if err != nil {
+		return nil, errors.Wrap(err, "while asking for path to terraform template")
+	}
+
+	source, err := askForSource()
+	if err != nil {
+		return nil, errors.Wrap(err, "while asking for path to terraform template")
+	}
+
+	var tfContentCfg manifestgen.TerraformConfig
+	tfContentCfg.ManifestPath = common.CreateManifestPath(common.ImplementationManifest, opts.ManifestPath)
+	tfContentCfg.ModulePath = basedToolDir
+	tfContentCfg.ManifestMetadata = opts.Metadata
+	tfContentCfg.Provider = provider
+	tfContentCfg.ModuleSourceURL = source
+	if slices.Contains(opts.ManifestsType, common.InterfaceManifest) {
+		tfContentCfg.InterfacePathWithRevision = "cap.interface." + opts.ManifestPath + ":0.1.0"
+	}
+	files, err := manifestgen.GenerateTerraformManifests(&tfContentCfg)
+	if err != nil {
+		return nil, errors.Wrap(err, "while generating Terraform manifests")
+	}
+	return files, nil
+}

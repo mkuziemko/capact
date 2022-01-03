@@ -31,15 +31,25 @@ func askForCommonMetadataInformation() (*common.Metadata, error) {
 			Name: "DocumentationURL",
 			Prompt: &survey.Input{
 				Message: "What is documentation URL?",
-				Default: "https://example.com",
+				Default: "",
 			},
+			Validate: common.ValidateURL,
 		},
 		{
 			Name: "SupportURL",
 			Prompt: &survey.Input{
 				Message: "What is support URL?",
-				Default: "https://example.com",
+				Default: "",
 			},
+			Validate: common.ValidateURL,
+		},
+		{
+			Name: "IconURL",
+			Prompt: &survey.Input{
+				Message: "What is icon URL?",
+				Default: "",
+			},
+			Validate: common.ValidateURL,
 		},
 	}
 	err := survey.Ask(qs, &metadata)
@@ -91,22 +101,25 @@ func askForMaintainer() (common.Maintainers, error) {
 			Name: "Email",
 			Prompt: &survey.Input{
 				Message: "What is email",
-				Default: "dev@example.com",
+				Default: "",
 			},
+			Validate: common.ManyValidators([]common.ValidateFun{survey.Required, common.ValidateEmail}),
 		},
 		{
 			Name: "Name",
 			Prompt: &survey.Input{
 				Message: "What is a name?",
-				Default: "Example Dev",
+				Default: "",
 			},
+			Validate: survey.Required,
 		},
 		{
-			Name: "Url",
+			Name: "URL",
 			Prompt: &survey.Input{
 				Message: "What is a Url?",
-				Default: "https://example.com",
+				Default: "",
 			},
+			Validate: common.ManyValidators([]common.ValidateFun{survey.Required, common.ValidateURL}),
 		},
 	}
 	err := survey.Ask(qs, &maintainer)
@@ -123,7 +136,6 @@ func askForManifestPathSuffix() (string, error) {
 			Validate: func(ans interface{}) error {
 				if str, ok := ans.(string); !ok || len(strings.Split(str, ".")) < 2 {
 					return errors.New(`manifest path suffix must be in format "[PREFIX].[NAME]"`)
-
 				}
 				return nil
 			},
@@ -153,7 +165,6 @@ func askForManifestRevision() (string, error) {
 			Validate: func(ans interface{}) error {
 				if str, ok := ans.(string); !ok || len(strings.Split(str, ".")) < 3 {
 					return errors.New(`manifest path suffix must be in format "[version].[version].[version]"`)
-
 				}
 				return nil
 			},

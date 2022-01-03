@@ -6,12 +6,20 @@ metadata:
   name: "{{ .Name }}"
   displayName: "{{ .Name }}"
   description: "{{ .Name }} attribute"
+  {{- if .Metadata.DocumentationURL }}
   documentationURL: {{.Metadata.DocumentationURL}}
+  {{- end}}
+  {{- if .Metadata.SupportURL }}
+  supportURL: {{.Metadata.SupportURL}}
+  {{- end}}
+  {{- if .Metadata.IconURL }}
+  iconURL: {{.Metadata.IconURL}}
+  {{- end}}
   {{- if .Metadata.Maintainers }}
   maintainers:
-  {{- range $maintainer := .Metadata.Maintainers}}
-    - email: {{$maintainer.Email}}
-      name: {{$maintainer.Name}}
-      url: {{$maintainer.Url}}
+  {{- range .Metadata.Maintainers }}
+    - email: {{.Email}}
+      name: {{.Name}}
+      url: {{.URL}}
   {{- end}}
   {{- end}}

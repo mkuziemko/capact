@@ -1,28 +1,17 @@
 ocfVersion: 0.0.1
-revision: {{ .Revision }}
+revision: 0.1.0
 kind: Implementation
 metadata:
-  prefix: "cap.implementation.{{ .Prefix }}"
-  name: {{ .Name }}
-  displayName: "{{ .Name }} Action"
-  description: "{{ .Name }} Action"
-  {{- if .Metadata.DocumentationURL }}
-  documentationURL: {{.Metadata.DocumentationURL}}
-  {{- end}}
-  {{- if .Metadata.SupportURL }}
-  supportURL: {{.Metadata.SupportURL}}
-  {{- end}}
-  {{- if .Metadata.IconURL }}
-  iconURL: {{.Metadata.IconURL}}
-  {{- end}}
-  {{- if .Metadata.Maintainers }}
+  prefix: "cap.implementation.empty"
+  name: test
+  displayName: "test Action"
+  description: "test Action"
+  documentationURL: https://example.com
+  supportURL: https://example.com
   maintainers:
-  {{- range .Metadata.Maintainers }}
-    - email: {{.Email}}
-      name: {{.Name}}
-      url: {{.URL}}
-  {{- end}}
-  {{- end}}
+    - email: dev@example.com
+      name: Example Dev
+      url: https://example.com
   license:
     name: "Apache 2.0"
 
@@ -32,15 +21,15 @@ spec:
     parameters:
       additional-parameters:
         typeRef:
-          path: cap.type.{{ .Prefix }}.{{ .Name }}-input
+          path: cap.type.empty.test-input
           revision: 0.1.0
 
   outputTypeInstanceRelations:
       config: {}
 
   implements:
-    - path: {{if .InterfacePath}}{{ .InterfacePath }}{{else}}"cap.interface..." # TODO(ContentDeveloper): Put here the path of the implemented Interface{{end}}
-      revision: {{if .InterfaceRevision}}{{ .InterfaceRevision }}{{else}}0.1.0{{end}}
+    - path: cap.interface.group.test
+      revision: 0.2.0
 
   requires:
     cap.core.type.platform:
@@ -59,9 +48,9 @@ spec:
     runnerInterface: argo.run
     args:
       workflow:
-        entrypoint: {{ .Name }}
+        entrypoint: test
         templates:
-          - name: {{ .Name }}
+          - name: test
             inputs:
               artifacts:
                 - name: input-parameters

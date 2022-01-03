@@ -1,9 +1,10 @@
 package manifestgen
 
 import (
+	"capact.io/capact/cmd/cli/cmd/alpha/manifest-gen/attribute"
 	"capact.io/capact/cmd/cli/cmd/alpha/manifest-gen/common"
 	"capact.io/capact/cmd/cli/cmd/alpha/manifest-gen/implementation"
-	_interface "capact.io/capact/cmd/cli/cmd/alpha/manifest-gen/interface"
+	"capact.io/capact/cmd/cli/cmd/alpha/manifest-gen/interfacegen"
 	"capact.io/capact/internal/cli/alpha/manifestgen"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -23,7 +24,8 @@ func NewCmd() *cobra.Command {
 		},
 	}
 
-	cmd.AddCommand(_interface.NewInterface())
+	cmd.AddCommand(attribute.NewAttribute())
+	cmd.AddCommand(interfacegen.NewInterface())
 	cmd.AddCommand(implementation.NewCmd())
 
 	cmd.PersistentFlags().StringP("output", "o", "generated", "Path to the output directory for the generated manifests")
@@ -37,16 +39,6 @@ func askInteractivelyForParameters(opts common.ManifestGenOptions) error {
 	opts.ManifestsType, err = askForManifestType()
 	if err != nil {
 		return errors.Wrap(err, "while asking for manifest type")
-	}
-
-	opts.Directory, err = common.AskForDirectory("path to the output directory for the generated manifests", "generated")
-	if err != nil {
-		return errors.Wrap(err, "while asking for output directory")
-	}
-
-	opts.Overwrite, err = askIfOverwrite()
-	if err != nil {
-		return errors.Wrap(err, "while asking if overwrite existing manifest files")
 	}
 
 	opts.ManifestPath, err = askForManifestPathSuffix()
@@ -82,6 +74,18 @@ func askInteractivelyForParameters(opts common.ManifestGenOptions) error {
 				return errors.Wrap(err, "while generating manifest file")
 			}
 			mergeFiles = mergeManifests(mergeFiles, files)
+		}
+	}
+
+	opts.Directory, err = common.AskForDirectory("path to the output directory for the generated manifests", "generated")
+	if err != nil {
+		return errors.Wrap(err, "while asking for output directory")
+	}
+
+	if manifestgen.ManifestsExistsInOutputDir(mergeFiles, opts.Directory) {
+		opts.Overwrite, err = askIfOverwrite()
+		if err != nil {
+			return errors.Wrap(err, "while asking if overwrite existing manifest files")
 		}
 	}
 
