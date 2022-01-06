@@ -37,6 +37,12 @@ func GenerateImplementation(opts common.ManifestGenOptions) (map[string]string, 
 		return nil, errors.Wrap(err, "while asking for used implementation tool")
 	}
 
+	license, err := askForLicense()
+	if err != nil {
+		return nil, errors.Wrap(err, "while asking for license")
+	}
+	opts.Metadata.License = license
+
 	toolAction := map[string]generateFun{
 		helmTool:      generateHelmManifests,
 		terraformTool: generateTerraformManifests,

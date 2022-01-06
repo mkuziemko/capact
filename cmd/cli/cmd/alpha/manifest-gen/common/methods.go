@@ -72,6 +72,7 @@ func GetDefaultMetadata() Metadata {
 			URL:   "https://example.com",
 		},
 	}
+	metadata.License.Name = &ApacheLicense
 	return metadata
 }
 
@@ -90,7 +91,7 @@ func ManyValidators(validateFuns []ValidateFun) func(ans interface{}) error {
 
 // ValidateURL validates a URL.
 func ValidateURL(ans interface{}) error {
-	if str, ok := ans.(string); !ok || (ans != "" && !isUrl(str)) {
+	if str, ok := ans.(string); !ok || (ans != "" && !isURL(str)) {
 		return errors.New("URL is not valid")
 	}
 	return nil
@@ -104,7 +105,7 @@ func ValidateEmail(ans interface{}) error {
 	return nil
 }
 
-func isUrl(str string) bool {
+func isURL(str string) bool {
 	u, err := url.Parse(str)
 	return err == nil && u.Scheme != "" && u.Host != ""
 }

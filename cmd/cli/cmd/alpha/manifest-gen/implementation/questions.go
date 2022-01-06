@@ -1,7 +1,9 @@
 package implementation
 
 import (
+	"capact.io/capact/cmd/cli/cmd/alpha/manifest-gen/common"
 	"capact.io/capact/internal/cli/alpha/manifestgen"
+	"capact.io/capact/pkg/sdk/apis/0.0.1/types"
 	"github.com/AlecAivazis/survey/v2"
 )
 
@@ -21,6 +23,34 @@ func askForImplementationTool() (string, error) {
 	}
 	err := survey.AskOne(prompt, &selectedTool)
 	return selectedTool, err
+}
+
+func askForLicense() (types.License, error) {
+	var licenseName, licenseRef string
+	name := &survey.Input{
+		Message: "Name of the license",
+		Default: common.ApacheLicense,
+	}
+	err := survey.AskOne(name, &licenseName)
+	if err != nil {
+		return types.License{}, err
+	}
+
+	if licenseName != common.ApacheLicense {
+		ref := &survey.Input{
+			Message: "Reference for the license",
+			Default: "",
+		}
+		err := survey.AskOne(ref, &licenseRef)
+		if err != nil {
+			return types.License{}, err
+		}
+	}
+
+	return types.License{
+		Name: &licenseName,
+		Ref:  &licenseRef,
+	}, err
 }
 
 func askForProvider() (manifestgen.Provider, error) {

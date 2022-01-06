@@ -24,7 +24,10 @@ metadata:
   {{- end}}
   {{- end}}
   license:
-    name: "Apache 2.0"
+    name: "{{ .Metadata.License.Name }}"
+    {{- if .Metadata.License.Ref }}
+    ref: {{.Metadata.License.Ref}}
+    {{- end}}
 
 spec:
   appVersion: "1.0.x" # TODO(ContentDeveloper): Set the supported application version here

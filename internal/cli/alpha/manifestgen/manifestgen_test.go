@@ -12,6 +12,7 @@ import (
 
 	"capact.io/capact/cmd/cli/cmd/alpha/manifest-gen/common"
 	"capact.io/capact/internal/cli/alpha/manifestgen"
+	"capact.io/capact/pkg/sdk/apis/0.0.1/types"
 	"github.com/stretchr/testify/require"
 	"gotest.tools/golden"
 )
@@ -53,6 +54,7 @@ func TestGenerateInterfaceManifests(t *testing.T) {
 			ManifestMetadata: manifestgen.MetaDataInfo{
 				DocumentationURL: "https://example.com",
 				SupportURL:       "https://example.com",
+				IconURL:          "https://example.com/icon.png",
 				Maintainers: []common.Maintainers{
 					{
 						Email: "dev@example.com",
@@ -94,6 +96,9 @@ func TestGenerateEmptyImplementationManifests(t *testing.T) {
 									Name:  "Example Dev",
 									URL:   "https://example.com",
 								},
+							},
+							License: types.License{
+								Name: &common.ApacheLicense,
 							},
 						},
 					},
@@ -138,6 +143,9 @@ func TestGenerateTerraformImplementationManifests(t *testing.T) {
 									URL:   "https://example.com",
 								},
 							},
+							License: types.License{
+								Name: &common.ApacheLicense,
+							},
 						},
 					},
 					InterfacePathWithRevision: "cap.interface.group.test:0.2.0",
@@ -162,6 +170,9 @@ func TestGenerateTerraformImplementationManifests(t *testing.T) {
 									Name:  "Example Dev",
 									URL:   "https://example.com",
 								},
+							},
+							License: types.License{
+								Name: &common.ApacheLicense,
 							},
 						},
 					},
@@ -188,6 +199,9 @@ func TestGenerateTerraformImplementationManifests(t *testing.T) {
 									Name:  "Example Dev",
 									URL:   "https://example.com",
 								},
+							},
+							License: types.License{
+								Name: &common.ApacheLicense,
 							},
 						},
 					},
@@ -235,6 +249,9 @@ func TestGenerateHelmImplementationManifests(t *testing.T) {
 									URL:   "https://example.com",
 								},
 							},
+							License: types.License{
+								Name: &common.ApacheLicense,
+							},
 						},
 					},
 					InterfacePathWithRevision: "cap.interface.group.test:0.2.0",
@@ -260,6 +277,9 @@ func TestGenerateHelmImplementationManifests(t *testing.T) {
 									Name:  "Example Dev",
 									URL:   "https://example.com",
 								},
+							},
+							License: types.License{
+								Name: &common.ApacheLicense,
 							},
 						},
 					},

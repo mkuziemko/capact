@@ -40,7 +40,7 @@ func WriteManifestFiles(outputDir string, files map[string]string, override bool
 
 //ManifestsExistsInOutputDir checks if manifests exists in dir
 func ManifestsExistsInOutputDir(files map[string]string, dir string) bool {
-	for manifestPath, _ := range files {
+	for manifestPath := range files {
 		manifestFilepath := strings.ReplaceAll(strings.TrimPrefix(manifestPath, "cap."), ".", string(os.PathSeparator)) + ".yaml"
 		outputFilepath := path.Join(dir, manifestFilepath)
 		if _, err := os.Stat(outputFilepath); !os.IsNotExist(err) {

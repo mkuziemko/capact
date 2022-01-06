@@ -35,7 +35,9 @@ spec:
 
   output:
     typeInstances:
+    {{- if .OutputTypeName}}
       config:
         typeRef:
-          path: {{if .OutputTypeName}}{{ .OutputTypeName }}{{else}}cap.type. # TODO(ContentDeveloper): Put here the path of the input Type{{end}}
+          path: {{ .OutputTypeName }}
           revision: {{if .OutputTypeRevision}}{{ .OutputTypeRevision }}{{else}}0.1.0{{end}}
+    {{else}} {} # TODO(ContentDeveloper): Configure here the output typeInstance if needed{{end}}

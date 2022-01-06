@@ -10,7 +10,7 @@ import (
 	"k8s.io/utils/strings/slices"
 )
 
-// NewHelm returns a cobra.Command to bootstrap Helm based manifests.
+// NewEmpty returns a cobra.Command to bootstrap empty manifests.
 func NewEmpty() *cobra.Command {
 	var emptyCfg manifestgen.EmptyImplementationConfig
 

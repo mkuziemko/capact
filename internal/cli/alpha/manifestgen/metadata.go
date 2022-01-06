@@ -17,12 +17,13 @@ type Maintainer struct {
 
 // MetaDataInfo holds metadata information about manifest file
 type MetaDataInfo struct {
-	Name             string       `yaml:"name"`
-	Prefix           string       `yaml:"prefix"`
-	DocumentationURL string       `yaml:"documentationURL"`
-	SupportURL       string       `yaml:"supportURL"`
-	IconURL          string       `yaml:"iconURL"`
-	Maintainers      []Maintainer `yaml:"maintainers"`
+	Name             string        `yaml:"name"`
+	Prefix           string        `yaml:"prefix"`
+	DocumentationURL string        `yaml:"documentationURL"`
+	SupportURL       string        `yaml:"supportURL"`
+	IconURL          string        `yaml:"iconURL"`
+	License          types.License `yaml:"license"`
+	Maintainers      []Maintainer  `yaml:"maintainers"`
 }
 
 // Metadata holds generic metadata information for Capact manifests.

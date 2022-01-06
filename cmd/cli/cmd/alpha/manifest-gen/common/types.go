@@ -12,18 +12,26 @@ type Maintainers = manifestgen.Maintainer
 
 // ManifestGenOptions is a struct based on which manifests are generated
 type ManifestGenOptions struct {
+	Directory      string
+	InterfacePath  string
 	ManifestsType  []string
 	ManifestPath   string
-	Directory      string
-	Overwrite      bool
 	Metadata       Metadata
-	InterfacePath  string
+	Overwrite      bool
+	Revision       string
 	TypeInputPath  string
 	TypeOutputPath string
-	Revision       string
 }
 
 var (
+	// ApacheLicense hold a name for Apache License
+	ApacheLicense = "Apache 2.0"
+	// AWSProvider hold a name for AWS Provider
+	AWSProvider = "AWS"
+	// AttributeManifest hold a name for Attribute Manifest
+	AttributeManifest = "Attribute"
+	// GCPProvider hold a name for GCP Provider
+	GCPProvider = "GCP"
 	// InterfaceManifest hold a name for Interface Manifest
 	InterfaceManifest = "Interface"
 	// InterfaceGroupManifest hold a name for InterfaceGroup Manifest
@@ -32,10 +40,4 @@ var (
 	ImplementationManifest = "Implementation"
 	// TypeManifest hold a name for Type Manifest
 	TypeManifest = "Type"
-	// AttributeManifest hold a name for Attribute Manifest
-	AttributeManifest = "Attribute"
-	// GCPProvider hold a name for GCP Provider
-	GCPProvider = "GCP"
-	// AWSProvider hold a name for AWS Provider
-	AWSProvider = "AWS"
 )

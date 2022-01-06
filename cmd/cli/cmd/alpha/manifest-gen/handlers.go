@@ -20,6 +20,10 @@ func generateInterface(opts common.ManifestGenOptions) (map[string]string, error
 		outputsuffix := strings.Split(opts.ManifestPath, ".")
 		opts.TypeOutputPath = common.CreateManifestPath(common.TypeManifest, outputsuffix[0]) + ".config:" + opts.Revision
 	}
+	if slices.Contains(opts.ManifestsType, common.ImplementationManifest) {
+		opts.TypeOutputPath = ""
+	}
+
 	files, err := interfacegen.GenerateInterfaceFile(opts, manifestgen.GenerateInterfaceTemplatingConfig)
 	if err != nil {
 		return nil, errors.Wrap(err, "while generating interface templating config")

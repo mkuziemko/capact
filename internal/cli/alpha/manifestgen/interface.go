@@ -138,7 +138,7 @@ func getInterfaceTemplatingConfig(cfg *InterfaceConfig) (*templatingConfig, erro
 	}
 
 	outputPathSlice := strings.SplitN(cfg.OutputPathWithRevision, ":", 2)
-	if len(inputPathSlice) == 2 {
+	if len(outputPathSlice) == 2 {
 		outputPath = outputPathSlice[0]
 		outputRevision = outputPathSlice[1]
 	}
