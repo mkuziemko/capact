@@ -79,24 +79,24 @@ func NewTerraform() *cobra.Command {
 }
 
 func generateTerraformManifests(opts common.ManifestGenOptions) (map[string]string, error) {
-	basedToolDir, err := common.AskForDirectory("Path to terraform template", "")
+	terraformTemplate, err := common.AskForDirectory("Path to Terraform template", "")
 	if err != nil {
-		return nil, errors.Wrap(err, "while asking for path to terraform template")
+		return nil, errors.Wrap(err, "while asking for path to Terraform template")
 	}
 
 	provider, err := askForProvider()
 	if err != nil {
-		return nil, errors.Wrap(err, "while asking for path to terraform template")
+		return nil, errors.Wrap(err, "while asking for provider")
 	}
 
 	source, err := askForSource()
 	if err != nil {
-		return nil, errors.Wrap(err, "while asking for path to terraform template")
+		return nil, errors.Wrap(err, "while asking for source to Terraform template")
 	}
 
 	var tfContentCfg manifestgen.TerraformConfig
 	tfContentCfg.ManifestPath = common.CreateManifestPath(common.ImplementationManifest, opts.ManifestPath)
-	tfContentCfg.ModulePath = basedToolDir
+	tfContentCfg.ModulePath = terraformTemplate
 	tfContentCfg.ManifestMetadata = opts.Metadata
 	tfContentCfg.Provider = provider
 	tfContentCfg.ModuleSourceURL = source

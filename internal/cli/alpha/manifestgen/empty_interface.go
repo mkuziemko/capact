@@ -7,7 +7,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-// GenerateEmptyManifests generates empty manifest files to be filled by the content developer
+// GenerateEmptyManifests generates empty manifest files to be filled by the content developer.
 func GenerateEmptyManifests(cfg *EmptyImplementationConfig) (map[string]string, error) {
 	cfgs := make([]*templatingConfig, 0, 2)
 

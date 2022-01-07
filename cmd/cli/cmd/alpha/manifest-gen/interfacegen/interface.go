@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type getManifestFun func(cfg *manifestgen.InterfaceConfig) (map[string]string, error)
+type genManifestFun func(cfg *manifestgen.InterfaceConfig) (map[string]string, error)
 
 // NewInterface returns a cobra.Command to bootstrap new Interface manifests.
 func NewInterface() *cobra.Command {
@@ -24,7 +24,7 @@ func NewInterface() *cobra.Command {
 		Long:    "Generate new InterfaceGroup, Interface and associated Type manifests",
 		Example: heredoc.WithCLIName(`
 			# Generate manifests for the cap.interface.database.postgresql.install Interface
-			<cli> alpha content interface cap.interface.database.postgresql.install`, cli.Name),
+			<cli> alpha manifest-gen interface cap.interface.database.postgresql.install`, cli.Name),
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) != 1 {
 				return errors.New("accepts only one argument")
@@ -69,8 +69,8 @@ func NewInterface() *cobra.Command {
 	return cmd
 }
 
-// GenerateInterfaceFile generates a interface file
-func GenerateInterfaceFile(opts common.ManifestGenOptions, fn getManifestFun) (map[string]string, error) {
+// GenerateInterfaceFile generates new Interface-group file based on function passed.
+func GenerateInterfaceFile(opts common.ManifestGenOptions, fn genManifestFun) (map[string]string, error) {
 	var interfaceCfg manifestgen.InterfaceConfig
 	interfaceCfg.ManifestPath = common.CreateManifestPath(common.InterfaceManifest, opts.ManifestPath)
 	interfaceCfg.ManifestRevision = opts.Revision

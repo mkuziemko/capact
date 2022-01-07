@@ -30,8 +30,8 @@ func NewCmd() *cobra.Command {
 	return cmd
 }
 
-// GenerateImplementation is responsible for generating implementation based on tool
-func GenerateImplementation(opts common.ManifestGenOptions) (map[string]string, error) {
+// GenerateImplementation is responsible for generating implementation manifest based on tool
+func GenerateImplementationManifest(opts common.ManifestGenOptions) (map[string]string, error) {
 	tool, err := askForImplementationTool()
 	if err != nil {
 		return nil, errors.Wrap(err, "while asking for used implementation tool")

@@ -21,7 +21,7 @@ func NewAttribute() *cobra.Command {
 		Short:   "Generate new Attribute manifests",
 		Example: heredoc.WithCLIName(`
 			# Generate manifests for the cap.attribute.cloud.provider.aws Attribute
-			<cli> alpha content attribute cap.attribute.cloud.provider.aws`, cli.Name),
+			<cli> alpha manifest-gen attribute cap.attribute.cloud.provider.aws`, cli.Name),
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) != 1 {
 				return errors.New("accepts only one argument")
@@ -29,7 +29,7 @@ func NewAttribute() *cobra.Command {
 
 			path := args[0]
 			if !strings.HasPrefix(path, "cap.attribute.") || len(strings.Split(path, ".")) < 4 {
-				return errors.New(`manifest path must be in format "cap.interface.[PREFIX].[NAME]"`)
+				return errors.New(`manifest path must be in format "cap.attribute.[PREFIX].[NAME]"`)
 			}
 
 			return nil
@@ -40,7 +40,7 @@ func NewAttribute() *cobra.Command {
 
 			files, err := manifestgen.GenerateAttributeTemplatingConfig(&attributeCfg)
 			if err != nil {
-				return errors.Wrap(err, "while generating content files")
+				return errors.Wrap(err, "while generating attribute templating config")
 			}
 
 			outputDir, err := cmd.Flags().GetString("output")
@@ -61,12 +61,12 @@ func NewAttribute() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVarP(&attributeCfg.ManifestRevision, "revision", "r", "0.1.0", "Revision of the Interface manifest")
+	cmd.Flags().StringVarP(&attributeCfg.ManifestRevision, "revision", "r", "0.1.0", "Revision of the Attribute manifest")
 
 	return cmd
 }
 
-// GenerateAttributeFile generates an attribute file
+// GenerateAttributeFile generates new Attribute file.
 func GenerateAttributeFile(opts common.ManifestGenOptions) (map[string]string, error) {
 	var attributeCfg manifestgen.AttributeConfig
 	attributeCfg.ManifestPath = common.CreateManifestPath(common.AttributeManifest, opts.ManifestPath)
@@ -74,7 +74,7 @@ func GenerateAttributeFile(opts common.ManifestGenOptions) (map[string]string, e
 	attributeCfg.ManifestRevision = opts.Revision
 	files, err := manifestgen.GenerateAttributeTemplatingConfig(&attributeCfg)
 	if err != nil {
-		return nil, errors.Wrap(err, "while generating content files")
+		return nil, errors.Wrap(err, "while generating attribute content file")
 	}
 	return files, nil
 }

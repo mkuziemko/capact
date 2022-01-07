@@ -10,16 +10,16 @@ import (
 	"k8s.io/utils/strings/slices"
 )
 
-// NewEmpty returns a cobra.Command to bootstrap empty manifests.
+// NewEmpty returns a cobra.Command to bootstrap empty Implementation manifests.
 func NewEmpty() *cobra.Command {
 	var emptyCfg manifestgen.EmptyImplementationConfig
 
 	cmd := &cobra.Command{
-		Use:   "empty [MANIFEST_PATH] [HELM_CHART_NAME]",
-		Short: "Generate empty implementation manifests",
+		Use:   "empty [MANIFEST_PATH]",
+		Short: "Generate empty Implementation manifests",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) != 1 {
-				return errors.New("accepts two arguments: [MANIFEST_PATH]")
+				return errors.New("accepts one argument: [MANIFEST_PATH]")
 			}
 
 			path := args[0]
@@ -35,7 +35,7 @@ func NewEmpty() *cobra.Command {
 
 			files, err := manifestgen.GenerateEmptyManifests(&emptyCfg)
 			if err != nil {
-				return errors.Wrap(err, "while generating Helm manifests")
+				return errors.Wrap(err, "while generating empty implementation manifests")
 			}
 
 			outputDir, err := cmd.Flags().GetString("output")
@@ -72,7 +72,7 @@ func generateEmptyManifests(opts common.ManifestGenOptions) (map[string]string, 
 	}
 	files, err := manifestgen.GenerateEmptyManifests(&emptyManifestCfg)
 	if err != nil {
-		return nil, errors.Wrap(err, "while generating Empty manifests")
+		return nil, errors.Wrap(err, "while generating empty implementation manifests")
 	}
 	return files, nil
 }

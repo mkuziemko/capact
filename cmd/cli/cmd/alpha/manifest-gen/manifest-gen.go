@@ -58,7 +58,7 @@ func askInteractivelyForParameters(opts common.ManifestGenOptions) error {
 	}
 	opts.Metadata = *metadata
 
-	generatingManifestsFun := map[string]getManifestFun{
+	generatingManifestsFun := map[string]genManifestFun{
 		common.AttributeManifest:      generateAttribute,
 		common.TypeManifest:           generateType,
 		common.InterfaceGroupManifest: generateInterfaceGroup,

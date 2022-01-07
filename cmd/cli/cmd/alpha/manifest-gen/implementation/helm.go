@@ -67,18 +67,18 @@ func NewHelm() *cobra.Command {
 }
 
 func generateHelmManifests(opts common.ManifestGenOptions) (map[string]string, error) {
-	basedToolDir, err := common.AskForDirectory("Path to helm template", "")
+	helmTemplate, err := common.AskForDirectory("Path to Helm template", "")
 	if err != nil {
-		return nil, errors.Wrap(err, "while asking for path to helm template")
+		return nil, errors.Wrap(err, "while asking for path to Helm template")
 	}
 	helmchartInfo, err := askForHelmChartDetails()
 	if err != nil {
-		return nil, errors.Wrap(err, "while asking for path to helm template")
+		return nil, errors.Wrap(err, "while asking for Helm chart details")
 	}
 
 	var helmCfg manifestgen.HelmConfig
 	helmCfg.ManifestPath = common.CreateManifestPath(common.ImplementationManifest, opts.ManifestPath)
-	helmCfg.ChartName = basedToolDir
+	helmCfg.ChartName = helmTemplate
 	helmCfg.ManifestMetadata = opts.Metadata
 	helmCfg.ChartRepoURL = helmchartInfo.URL
 	helmCfg.ChartVersion = helmchartInfo.Version

@@ -6,7 +6,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-// GenerateAttributeTemplatingConfig generates an attribute templating config
+// GenerateAttributeTemplatingConfig generates an attribute templating config.
 func GenerateAttributeTemplatingConfig(cfg *AttributeConfig) (map[string]string, error) {
 	prefix, name, err := splitPathToPrefixAndName(cfg.ManifestPath)
 	if err != nil {

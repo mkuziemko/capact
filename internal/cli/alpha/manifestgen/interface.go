@@ -9,7 +9,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-type getManifestFun func(cfg *InterfaceConfig) (*templatingConfig, error)
+type genManifestFun func(cfg *InterfaceConfig) (*templatingConfig, error)
 
 // GenerateInterfaceManifests generates manifest files for a new Interface.
 func GenerateInterfaceManifests(cfg *InterfaceConfig) (map[string]string, error) {
@@ -62,20 +62,20 @@ func GenerateInterfaceManifests(cfg *InterfaceConfig) (map[string]string, error)
 
 // GenerateInterfaceTemplatingConfig generates Interface templating config
 func GenerateInterfaceTemplatingConfig(cfg *InterfaceConfig) (map[string]string, error) {
-	return generateFile(cfg, []getManifestFun{getInterfaceTemplatingConfig})
+	return generateFile(cfg, []genManifestFun{getInterfaceTemplatingConfig})
 }
 
 // GenerateInterfaceGroupTemplatingConfig generates InterfaceGroup templating config
 func GenerateInterfaceGroupTemplatingConfig(cfg *InterfaceConfig) (map[string]string, error) {
-	return generateFile(cfg, []getManifestFun{getInterfaceGroupTemplatingConfig})
+	return generateFile(cfg, []genManifestFun{getInterfaceGroupTemplatingConfig})
 }
 
 // GenerateTypeTemplatingConfig generates Type templating config
 func GenerateTypeTemplatingConfig(cfg *InterfaceConfig) (map[string]string, error) {
-	return generateFile(cfg, []getManifestFun{getInterfaceInputTypeTemplatingConfig, getInterfaceOutputTypeTemplatingConfig})
+	return generateFile(cfg, []genManifestFun{getInterfaceInputTypeTemplatingConfig, getInterfaceOutputTypeTemplatingConfig})
 }
 
-func generateFile(cfg *InterfaceConfig, fn []getManifestFun) (map[string]string, error) {
+func generateFile(cfg *InterfaceConfig, fn []genManifestFun) (map[string]string, error) {
 	cfgs := make([]*templatingConfig, 0, 4)
 	for _, fun := range fn {
 		interfaceCfg, err := fun(cfg)

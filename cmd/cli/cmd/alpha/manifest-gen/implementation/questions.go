@@ -36,6 +36,7 @@ func askForLicense() (types.License, error) {
 		return types.License{}, err
 	}
 
+	// TODO: can be extended to a list of licenses that do not need a ref
 	if licenseName != common.ApacheLicense {
 		ref := &survey.Input{
 			Message: "Reference for the license",

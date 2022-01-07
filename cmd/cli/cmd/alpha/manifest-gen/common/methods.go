@@ -14,7 +14,7 @@ import (
 // ValidateFun is a function that validates the user's answers. It is used in the survey library.
 type ValidateFun func(ans interface{}) error
 
-// AskForDirectory asks for a directory. It suggests to a user the list of dirs that can be used.
+// AskForDirectory asks for a directory. It suggests to a user a list of dirs that can be used.
 func AskForDirectory(msg string, defaultDir string) (string, error) {
 	chosenDir := ""
 	directoryPrompt := &survey.Input{
@@ -80,8 +80,7 @@ func GetDefaultMetadata() Metadata {
 func ManyValidators(validateFuns []ValidateFun) func(ans interface{}) error {
 	return func(ans interface{}) error {
 		for _, fun := range validateFuns {
-			err := fun(ans)
-			if err != nil {
+			if err := fun(ans); err != nil {
 				return err
 			}
 		}

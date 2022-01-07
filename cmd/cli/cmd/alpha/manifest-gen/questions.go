@@ -68,7 +68,7 @@ func askForCommonMetadataInformation() (*common.Metadata, error) {
 func askForMaintainers() ([]common.Maintainers, error) {
 	var maintainers []common.Maintainers
 	for {
-		name := false
+		addMore := false
 		message := ""
 		if len(maintainers) < 1 {
 			message = "Do you want to add maintainer?"
@@ -78,17 +78,17 @@ func askForMaintainers() ([]common.Maintainers, error) {
 		prompt := &survey.Confirm{
 			Message: message,
 		}
-		err := survey.AskOne(prompt, &name)
+		err := survey.AskOne(prompt, &addMore)
 		if err != nil {
 			return nil, errors.Wrap(err, "while asking if add maintainers")
 		}
-		if !name {
+		if !addMore {
 			return maintainers, nil
 		}
 
 		maintainer, err := askForMaintainer()
 		if err != nil {
-			return nil, errors.Wrap(err, "while asking if for maintainer")
+			return nil, errors.Wrap(err, "while asking for maintainer details")
 		}
 		maintainers = append(maintainers, maintainer)
 	}
@@ -164,7 +164,7 @@ func askForManifestRevision() (string, error) {
 			},
 			Validate: func(ans interface{}) error {
 				if str, ok := ans.(string); !ok || len(strings.Split(str, ".")) < 3 {
-					return errors.New(`manifest path suffix must be in format "[version].[version].[version]"`)
+					return errors.New(`revision must be in format "[major].[minor].[patch]"`)
 				}
 				return nil
 			},
