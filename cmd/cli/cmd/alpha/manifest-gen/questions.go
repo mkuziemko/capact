@@ -1,8 +1,6 @@
 package manifestgen
 
 import (
-	"strings"
-
 	"capact.io/capact/cmd/cli/cmd/alpha/manifest-gen/common"
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/pkg/errors"
@@ -126,25 +124,6 @@ func askForMaintainer() (common.Maintainers, error) {
 	return maintainer, err
 }
 
-func askForManifestPathSuffix() (string, error) {
-	var manifestPath string
-	prompt := []*survey.Question{
-		{
-			Prompt: &survey.Input{
-				Message: "Manifest path suffix",
-			},
-			Validate: func(ans interface{}) error {
-				if str, ok := ans.(string); !ok || len(strings.Split(str, ".")) < 2 {
-					return errors.New(`manifest path suffix must be in format "[PREFIX].[NAME]"`)
-				}
-				return nil
-			},
-		},
-	}
-	err := survey.Ask(prompt, &manifestPath)
-	return manifestPath, err
-}
-
 func askIfOverwrite() (bool, error) {
 	overwrite := false
 	prompt := &survey.Confirm{
@@ -152,24 +131,4 @@ func askIfOverwrite() (bool, error) {
 	}
 	err := survey.AskOne(prompt, &overwrite)
 	return overwrite, err
-}
-
-func askForManifestRevision() (string, error) {
-	var manifestRevision string
-	prompt := []*survey.Question{
-		{
-			Prompt: &survey.Input{
-				Message: "Revision of the manifests",
-				Default: "0.1.0",
-			},
-			Validate: func(ans interface{}) error {
-				if str, ok := ans.(string); !ok || len(strings.Split(str, ".")) < 3 {
-					return errors.New(`revision must be in format "[major].[minor].[patch]"`)
-				}
-				return nil
-			},
-		},
-	}
-	err := survey.Ask(prompt, &manifestRevision)
-	return manifestRevision, err
 }

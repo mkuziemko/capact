@@ -7,7 +7,6 @@ import (
 	"capact.io/capact/internal/cli/alpha/manifestgen"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-	"k8s.io/utils/strings/slices"
 )
 
 // NewHelm returns a cobra.Command to bootstrap Helm based manifests.
@@ -82,9 +81,8 @@ func generateHelmManifests(opts common.ManifestGenOptions) (map[string]string, e
 	helmCfg.ManifestMetadata = opts.Metadata
 	helmCfg.ChartRepoURL = helmchartInfo.URL
 	helmCfg.ChartVersion = helmchartInfo.Version
-	if slices.Contains(opts.ManifestsType, common.InterfaceManifest) {
-		helmCfg.InterfacePathWithRevision = "cap.interface." + opts.ManifestPath + ":0.1.0"
-	}
+	helmCfg.InterfacePathWithRevision = opts.InterfacePath
+
 	files, err := manifestgen.GenerateHelmManifests(&helmCfg)
 	if err != nil {
 		return nil, errors.Wrap(err, "while generating Helm manifests")

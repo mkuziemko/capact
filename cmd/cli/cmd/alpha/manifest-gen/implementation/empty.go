@@ -7,7 +7,6 @@ import (
 	"capact.io/capact/internal/cli/alpha/manifestgen"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-	"k8s.io/utils/strings/slices"
 )
 
 // NewEmpty returns a cobra.Command to bootstrap empty Implementation manifests.
@@ -67,9 +66,7 @@ func generateEmptyManifests(opts common.ManifestGenOptions) (map[string]string, 
 	emptyManifestCfg.ManifestPath = common.CreateManifestPath(common.ImplementationManifest, opts.ManifestPath)
 	emptyManifestCfg.ManifestMetadata = opts.Metadata
 	emptyManifestCfg.ManifestRevision = opts.Revision
-	if slices.Contains(opts.ManifestsType, common.InterfaceManifest) {
-		emptyManifestCfg.InterfacePathWithRevision = "cap.interface." + opts.ManifestPath + ":" + opts.Revision
-	}
+	emptyManifestCfg.InterfacePathWithRevision = opts.InterfacePath
 	files, err := manifestgen.GenerateEmptyManifests(&emptyManifestCfg)
 	if err != nil {
 		return nil, errors.Wrap(err, "while generating empty implementation manifests")

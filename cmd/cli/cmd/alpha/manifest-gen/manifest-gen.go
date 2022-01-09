@@ -41,14 +41,14 @@ func askInteractivelyForParameters(opts common.ManifestGenOptions) error {
 		return errors.Wrap(err, "while asking for manifest type")
 	}
 
-	opts.ManifestPath, err = askForManifestPathSuffix()
+	opts.ManifestPath, err = common.AskForManifestPathSuffix("Manifest path suffix")
 	if err != nil {
 		return errors.Wrap(err, "while asking for manifest path suffix")
 	}
 
-	revision, err := askForManifestRevision()
+	revision, err := common.AskForManifestRevision()
 	if err != nil {
-		return errors.Wrap(err, "while getting the common metadata information")
+		return errors.Wrap(err, "while asking for manifest revision")
 	}
 	opts.Revision = revision
 

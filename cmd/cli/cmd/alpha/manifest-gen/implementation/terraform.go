@@ -9,7 +9,6 @@ import (
 	"capact.io/capact/internal/cli/heredoc"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-	"k8s.io/utils/strings/slices"
 )
 
 // NewTerraform returns a cobra.Command to bootstrap Terraform based manifests.
@@ -100,9 +99,8 @@ func generateTerraformManifests(opts common.ManifestGenOptions) (map[string]stri
 	tfContentCfg.ManifestMetadata = opts.Metadata
 	tfContentCfg.Provider = provider
 	tfContentCfg.ModuleSourceURL = source
-	if slices.Contains(opts.ManifestsType, common.InterfaceManifest) {
-		tfContentCfg.InterfacePathWithRevision = "cap.interface." + opts.ManifestPath + ":0.1.0"
-	}
+	tfContentCfg.InterfacePathWithRevision = opts.InterfacePath
+
 	files, err := manifestgen.GenerateTerraformManifests(&tfContentCfg)
 	if err != nil {
 		return nil, errors.Wrap(err, "while generating Terraform manifests")

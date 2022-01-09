@@ -44,12 +44,14 @@ func generateInterfaceGroup(opts common.ManifestGenOptions) (map[string]string, 
 
 func generateInterface(opts common.ManifestGenOptions) (map[string]string, error) {
 	if slices.Contains(opts.ManifestsType, common.TypeManifest) || slices.Contains(opts.ManifestsType, common.ImplementationManifest) {
-		opts.TypeInputPath = common.CreateManifestPath(common.TypeManifest, opts.ManifestPath) + "-input:" + opts.Revision
-		outputsuffix := strings.Split(opts.ManifestPath, ".")
-		opts.TypeOutputPath = common.CreateManifestPath(common.TypeManifest, outputsuffix[0]) + ".config:" + opts.Revision
+		inputPath := common.CreateManifestPath(common.TypeManifest, opts.ManifestPath) + "-input"
+		opts.TypeInputPath = common.AddRevisionToPath(inputPath, opts.Revision)
 	}
-	if slices.Contains(opts.ManifestsType, common.ImplementationManifest) {
-		opts.TypeOutputPath = ""
+
+	if slices.Contains(opts.ManifestsType, common.TypeManifest) {
+		outputsuffix := strings.Split(opts.ManifestPath, ".")
+		outputPath := common.CreateManifestPath(common.TypeManifest, outputsuffix[0]) + ".config"
+		opts.TypeOutputPath = common.AddRevisionToPath(outputPath, opts.Revision)
 	}
 
 	files, err := interfacegen.GenerateInterfaceFile(opts, manifestgen.GenerateInterfaceTemplatingConfig)

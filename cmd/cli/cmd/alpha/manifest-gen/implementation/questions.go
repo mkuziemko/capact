@@ -5,6 +5,7 @@ import (
 	"capact.io/capact/internal/cli/alpha/manifestgen"
 	"capact.io/capact/pkg/sdk/apis/0.0.1/types"
 	"github.com/AlecAivazis/survey/v2"
+	"github.com/pkg/errors"
 )
 
 type helmChart struct {
@@ -25,6 +26,19 @@ func askForImplementationTool() (string, error) {
 	return selectedTool, err
 }
 
+func askForInterface() (string, error) {
+	path, err := common.AskForManifestPathSuffix("Interface manifest path suffix")
+	if err != nil {
+		return "", errors.Wrap(err, "while asking for interface manifest path suffix")
+	}
+
+	revision, err := common.AskForManifestRevision()
+	if err != nil {
+		return "", errors.Wrap(err, "while asking for interface revision")
+	}
+	return common.AddRevisionToPath(path, revision), nil
+}
+
 func askForLicense() (types.License, error) {
 	var licenseName, licenseRef string
 	name := &survey.Input{
@@ -37,21 +51,24 @@ func askForLicense() (types.License, error) {
 	}
 
 	// TODO: can be extended to a list of licenses that do not need a ref
-	if licenseName != common.ApacheLicense {
-		ref := &survey.Input{
-			Message: "Reference for the license",
-			Default: "",
-		}
-		err := survey.AskOne(ref, &licenseRef)
-		if err != nil {
-			return types.License{}, err
-		}
+	if licenseName == common.ApacheLicense {
+		return types.License{
+			Name: &licenseName,
+		}, nil
 	}
 
+	ref := &survey.Input{
+		Message: "Reference for the license",
+		Default: "",
+	}
+	err = survey.AskOne(ref, &licenseRef)
+	if err != nil {
+		return types.License{}, err
+	}
 	return types.License{
 		Name: &licenseName,
 		Ref:  &licenseRef,
-	}, err
+	}, nil
 }
 
 func askForProvider() (manifestgen.Provider, error) {
