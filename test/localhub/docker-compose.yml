@@ -8,12 +8,6 @@ services:
     environment:
       - HUBJS_ADDR=http://hubjs:8080/graphql
       - GRPC_SECRET_STORAGE_BACKEND_ADDR=http://backend-storage:50051
-    healthcheck:
-      test: netstat -ltn | grep -c 8080
-      interval: 10s
-      timeout: 10s
-      retries: 10
-      start_period: 800s
   hubjs:
     image: "${DOCKER_REPOSITORY}/hub-js:${DOCKER_TAG}"
     restart: on-failure

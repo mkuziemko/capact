@@ -6,6 +6,7 @@ package e2e
 import (
 	"context"
 	"fmt"
+	"regexp"
 	"strings"
 
 	"capact.io/capact/internal/ptr"
@@ -18,6 +19,7 @@ import (
 	"github.com/MakeNowJust/heredoc"
 	prmt "github.com/gitchander/permutation"
 	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
 )
 
@@ -244,6 +246,12 @@ var _ = Describe("GraphQL API", func() {
 	})
 })
 
+type StorageSpec struct {
+	URL           *string `json:"url,omitempty"`
+	AcceptValue   *bool   `json:"acceptValue,omitempty"`
+	ContextSchema *string `json:"contextSchema,omitempty"`
+}
+
 func includes(ids []string, expID string) bool {
 	for _, i := range ids {
 		if i == expID {
@@ -252,6 +260,24 @@ func includes(ids []string, expID string) bool {
 	}
 
 	return false
+}
+
+func registerExternalStorage(ctx context.Context, cli *hubclient.Client, value interface{}) (string, func()) {
+	storage := &gqllocalapi.CreateTypeInstanceInput{
+		TypeRef: &gqllocalapi.TypeInstanceTypeReferenceInput{
+			Path:     "cap.type.example.filesystem.storage",
+			Revision: "0.1.0",
+		},
+		Value: value,
+	}
+
+	externalStorageID, err := cli.CreateTypeInstance(ctx, storage)
+	Expect(err).NotTo(HaveOccurred())
+	Expect(externalStorageID).NotTo(BeEmpty())
+
+	return externalStorageID, func() {
+		_ = cli.DeleteTypeInstance(ctx, externalStorageID)
+	}
 }
 
 func typeInstance(ver string) *gqllocalapi.CreateTypeInstanceInput {

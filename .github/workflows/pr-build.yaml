@@ -403,8 +403,8 @@ jobs:
           path: ${{ github.workspace }}/bin/capact_linux_amd64/capact
           retention-days: 1 # Default 90 days
 
-  hubjs-tests:
-    name: Hubjs tests
+  localhub-tests:
+    name: Local Hub tests
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false
     needs: [ push-apps, push-tests, build-cli ]
@@ -416,8 +416,16 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-      - name: Creating the stack
-        run: docker-compose -f ./test/hubtests/docker-compose.yml up --exit-code-from tests
+      - name: Setup environment
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          . ./hack/ci/setup-env.sh
+      - name: Run local Hub tests
+        env:
+          BUILD_IMAGES: "false"
+        run: |
+          make test-localhub
 
   integration-tests:
     name: Integration tests
