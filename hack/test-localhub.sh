@@ -28,6 +28,7 @@ build_images() {
   done
 }
 
+
 main() {
   if [[ "${BUILD_IMAGES:-"true"}" == "true" ]]; then
     build_images
