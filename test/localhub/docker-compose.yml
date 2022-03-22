@@ -6,7 +6,7 @@ services:
       hubjs:
         condition: service_healthy
     environment:
-      - HUBJS_ADDR=http://hubjs:8080/graphql
+      - LOCALHUB_ADDR=http://hubjs:8080/graphql
       - GRPC_SECRET_STORAGE_BACKEND_ADDR=http://backend-storage:50051
   hubjs:
     image: "${DOCKER_REPOSITORY}/hub-js:${DOCKER_TAG}"
@@ -48,5 +48,6 @@ services:
     restart: on-failure
     environment:
       - GRPC_SECRET_STORAGE_BACKEND_ADDR=50051
+      - APP_SUPPORTED_PROVIDERS=dotenv
     ports:
       - "50051:50051"
