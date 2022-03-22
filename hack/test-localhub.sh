@@ -32,7 +32,7 @@ main() {
         build_images
     fi
     
-    docker-compose -f "${REPO_ROOT_DIR}/test/localhub/docker-compose.yml" up --exit-code-from tests
+    docker-compose -f "${REPO_ROOT_DIR}/test/localhub/docker-compose.yml" up --exit-code-from tests --force-recreate
 }
 
 main
