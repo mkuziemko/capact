@@ -16,7 +16,6 @@ import (
 	k8sretry "k8s.io/client-go/util/retry"
 )
 
-// ApplyClusterIssuer creates or, if it already exists, updates a ClusterIssuer for cert-manager.
 func ApplyClusterIssuer(ctx context.Context, config *rest.Config, new *certv1.ClusterIssuer) error {
 	clientset, err := certmanager.NewForConfig(config)
 	if err != nil {
